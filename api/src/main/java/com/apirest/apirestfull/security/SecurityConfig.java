@@ -71,7 +71,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Deshabilita CSRF por simplicidad
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("api/auth/**", "/error").permitAll() // Rutas permitidas sin autenticación
-                .requestMatchers(HttpMethod.POST, "/productos").hasRole("ADMIN") // Solo los ADMIN pueden crear productos
+                .requestMatchers(HttpMethod.POST, "api/productos").hasRole("ADMIN") // Solo los ADMIN pueden crear productos
                 .requestMatchers("api/productos/**").authenticated() // Las demás acciones sobre productos requieren autenticación
                 .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
             )
@@ -96,7 +96,7 @@ public class SecurityConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Habilita CORS para todas las rutas
                         .allowedOrigins("http://localhost:5173") // Permite el dominio del frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos permitidos
                         .allowedHeaders("*") // Headers permitidos
                         .allowCredentials(true); // Permitir credenciales (si estás usando JWT o cookies)
             }

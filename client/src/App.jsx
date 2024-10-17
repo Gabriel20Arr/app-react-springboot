@@ -1,15 +1,20 @@
 import { Routes, Route } from "react-router-dom";
-import Register from "./pages/register/register";
-import Login from "./pages/login/login";
-
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import HomePages from "./pages/HomePage"
+import ProfilePages from "./pages/ProfilePages"
+import ProtectedRoute from "./ProtectedRoute";
 
 const App = () => {
   return (
     <Routes>
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />}/>
-      <Route path="/profile" element={<h1>Profile</h1>}/>
-      <Route path="/" element={<h1>Home</h1>}/>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<HomePages />}/>
+        <Route path="/profile" element={<ProfilePages />}/>
+      </Route>
     </Routes>
   )
 }

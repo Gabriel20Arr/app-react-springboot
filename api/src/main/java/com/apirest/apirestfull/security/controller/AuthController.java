@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,8 @@ import com.apirest.apirestfull.security.service.RolService;
 import com.apirest.apirestfull.security.service.UsuarioService;
 import java.text.ParseException;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -59,15 +62,15 @@ public class AuthController {
 
 
     @PostMapping("/nuevo")
-    public ResponseEntity<Mensaje> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
+    public ResponseEntity<Usuario> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) 
-            return new ResponseEntity<>(new Mensaje("Verifique los datos introducidos"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         
-        if(usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
-            return new ResponseEntity<>(new Mensaje("El nombre de usuario " + nuevoUsuario.getNombreUsuario() + " ya se encuentra registrado"), HttpStatus.BAD_REQUEST);
+        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         
-        if(usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity<>(new Mensaje("El email " + nuevoUsuario.getEmail() + " ya se encuentra registrado"), HttpStatus.BAD_REQUEST);
+        if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         
         // Crear el nuevo usuario
         Usuario usuario = new Usuario(
@@ -79,31 +82,24 @@ public class AuthController {
     
         // Asignar roles
         Set<Rol> roles = new HashSet<>();
-        logger.info("Roles recibidos antes del if: " + nuevoUsuario.getRoles());
-        // Verificar si el usuario solicitó el rol de admin
         if (nuevoUsuario.getRoles().contains(RolNombre.ROLE_ADMIN)) {
-            System.out.println("Rol de admin detectado");
             roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
         } else {
-            // Si no se solicitó el rol de admin, asignar el rol de usuario por defecto
-            System.out.println("Rol de user detectado");
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get()); // Asignar rol por defecto
+            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
         }
-        
-        // Antes de la verificación de roles
-        logger.info("Roles recibidos: " + nuevoUsuario.getRoles());
-        System.out.println("NOMBRE DEL ROL CREADO" + nuevoUsuario.getRoles());
+    
         usuario.setRoles(roles);
-    
         usuarioService.save(usuario);
-    
-        return new ResponseEntity<>(new Mensaje("Usuario registrado con éxito"), HttpStatus.CREATED);
+        
+        // Devolver el objeto Usuario registrado
+        return new ResponseEntity<>(usuario, HttpStatus.CREATED);
     }
+    
     
 
     // Endpoint para el login
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult, HttpServletResponse response) {
         if (bindingResult.hasErrors())
             return new ResponseEntity<Mensaje>(new Mensaje("Usuario inválido"), HttpStatus.UNAUTHORIZED);
         
@@ -120,11 +116,45 @@ public class AuthController {
             String jwt = jwtProvider.generateToken(authentication);
     
             // Crear DTO con el token y los detalles del usuario
-            JwtDto jwtDto = new JwtDto(jwt);
-            
-            return new ResponseEntity<JwtDto>(jwtDto, HttpStatus.OK);
+            // JwtDto jwtDto = new JwtDto(jwt);
+
+            // Crear una cookie y establecer el token
+            Cookie cookie = new Cookie("token", jwt);
+            cookie.setHttpOnly(false); // Evita el acceso desde JavaScript
+            cookie.setSecure(true); // Solo se envía en solicitudes HTTPS
+            cookie.setMaxAge(24 * 60 * 60); // Caducidad de la cookie (1 día en este caso)
+            cookie.setPath("/"); // Disponible en toda la aplicación
+    
+            response.addCookie(cookie); // Añadir la cookie a la respuesta
+            return new ResponseEntity<>(jwt, HttpStatus.OK);
+            // return new ResponseEntity<>(new Mensaje("Login exitoso"), HttpStatus.OK);
         } catch (AuthenticationException e) {
             return new ResponseEntity<Mensaje>(new Mensaje("Credenciales incorrectas"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private Set<String> invalidTokens = new HashSet<>();
+    //Endpoint logout
+    @DeleteMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody JwtDto jwtDto) {
+        // agregamos el token a la lista de tokens invalidos
+        // System.out.println(jwtDto.getToken());
+        invalidTokens.add(jwtDto.getToken());
+        return new ResponseEntity<>(new Mensaje("Logout exitoso"), HttpStatus.OK);
+    }
+
+    @PostMapping("/verify-token")
+    public ResponseEntity<Mensaje> verifyToken(@RequestBody JwtDto jwtDto) {
+        try {
+            // Verifica si el token es válido
+            if (jwtProvider.validateToken(jwtDto.getToken())) {
+                // logger.info(jwtDto.getToken());
+                return new ResponseEntity<>(new Mensaje("Token válido"), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new Mensaje("Token inválido o expirado"), HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(new Mensaje("Error al verificar el token"), HttpStatus.BAD_REQUEST);
         }
     }
 

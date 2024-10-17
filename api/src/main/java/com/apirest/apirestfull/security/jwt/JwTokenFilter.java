@@ -30,7 +30,7 @@ public class JwTokenFilter extends OncePerRequestFilter{
         try {
             String token = getToken(req);
             if (token != null && jwtProvider.validateToken(token)) {
-                logger.info("Token válido: " + token); // Agregar log
+                // logger.info("Token válido: " + token); // Agregar log
                 String username = jwtProvider.getNombreUsuarioFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
     

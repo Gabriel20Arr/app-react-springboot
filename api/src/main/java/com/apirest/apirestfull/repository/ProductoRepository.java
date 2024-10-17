@@ -13,6 +13,8 @@ import com.apirest.apirestfull.entity.Producto;
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
     Optional<Producto> findByNombre(String nombre);
 
+    Optional<Producto> findById(int id);
+
     List<Producto> findByUsuarioId(int usuarioId);
 
     boolean existsByNombre(String nombre);
