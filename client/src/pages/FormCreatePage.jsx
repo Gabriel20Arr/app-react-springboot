@@ -35,7 +35,7 @@ export const FormCreatePage = ({ closeModal }) => {
           
           <textarea placeholder='Descripción' className='p-2 mb-2 rounded-lg min-h-20 w-full text-lg' {...register("descripcion", { required: true })} />
           {errors.descripcion && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El descripcion es requerido"}</span>}
-          <button type='submit' className='border-2 rounded-md px-3 bg-white hover:bg-slate-200 mt-4'>Crear</button>
+          <button type='submit'  className='w-full text-white border-separate bg-blue-600 rounded-md p-2 pr-4 pl-4 font-bold mt-2'>Crear</button>
         </form>
       </div>
     </div>

@@ -121,11 +121,20 @@ const ProductosPages = () => {
                 <button onClick={() => setOpenDetalle(false)} className='flex items-center justify-center hover:scale-110 border-2 bg-gray-100 w-8 h-8 pb-2 rounded-full'>x</button>
               </div>
               {/* Detalles del producto */}
-              <input type='text' name="nombre" placeholder='Nombre' className='p-2 mb-2 rounded-lg' defaultValue={productDetalle.nombre} readOnly />
-              <input type='number' name="precio" placeholder='Precio' className='p-2 mb-2 rounded-lg' defaultValue={productDetalle.precio} readOnly />
-              <input type='number' name="peso" placeholder='Peso' className='p-2 mb-2 rounded-lg' defaultValue={productDetalle.peso} readOnly />
-              <input type='number' name="altura" placeholder='Altura' className='p-2 mb-2 rounded-lg' defaultValue={productDetalle.altura} readOnly />
-              <input type='text' name="descripcion" placeholder='Descripción' className='p-2 mb-2 rounded-lg' defaultValue={productDetalle.descripcion} readOnly />
+              <label className='w-full text-2xl'>Nombre</label>
+              <input type='text' name="nombre" placeholder='Nombre' className='p-2 mb-2 rounded-lg text-2xl w-full pl-2' defaultValue={productDetalle.nombre} readOnly />
+              
+              <label className='w-full text-2xl'>Precio</label>
+              <input type='number' name="precio" placeholder='Precio' className='p-2 mb-2 rounded-lg text-2xl w-full pl-2' defaultValue={productDetalle.precio} readOnly />
+              
+              <label className='w-full text-2xl'>Peso</label>
+              <input type='number' name="peso" placeholder='Peso' className='p-2 mb-2 rounded-lg text-2xl w-full pl-2' defaultValue={productDetalle.peso} readOnly />
+              
+              <label className='w-full text-2xl'>Altura</label>
+              <input type='number' name="altura" placeholder='Altura' className='p-2 mb-2 rounded-lg text-2xl w-full pl-2' defaultValue={productDetalle.altura} readOnly />
+              
+              <label className='w-full text-2xl'>Descripción</label>
+              <input type='text' name="descripcion" placeholder='Descripción' className='p-2 mb-2 rounded-lg text-2xl w-full pl-2' defaultValue={productDetalle.descripcion} readOnly />
             </div>
           </div>
         </div>
@@ -141,22 +150,27 @@ const ProductosPages = () => {
                 <button type="button" onClick={() => setOpenEdit(false)} className='flex items-center justify-center hover:scale-110 border-2 bg-gray-100 w-8 h-8 pb-2 rounded-full'>x</button>
               </div>
               
+              <label className='w-full text-2xl'>Nombre</label>
               <input type='text' placeholder='Nombre' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.nombre} {...register("nombre")} />
               {errors.nombre && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El nombre es requerido o esta duplicado"}</span>}
-            
+
+              <label className='w-full text-2xl'>Precio</label>
               <input type='number' placeholder='Precio' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.precio} {...register("precio")} />
               {errors.precio && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El precio es requerido"}</span>}
             
+              <label className='w-full text-2xl'>Peso</label>
               <input type='number' placeholder='Peso' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.peso} {...register("peso")} />
               {errors.peso && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El peso es requerido"}</span>}
               
+              <label className='w-full text-2xl'>Altura</label>
               <input type='number' placeholder='Altura' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.altura} {...register("altura")} />
               {errors.altura && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El altura es requerido"}</span>}
               
+              <label className='w-full text-2xl'>Descripción</label>
               <textarea placeholder='Descripción' className='p-2 mb-2 rounded-lg min-h-20 w-full text-lg' defaultValue={selectedProduct.descripcion} {...register("descripcion")} />
               {errors.descripcion && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El descripcion es requerido"}</span>}
               
-              <button type='submit' className='border-2 rounded-md px-3 bg-white hover:bg-slate-200 mt-4'>Actualizar</button>
+              <button type='submit'  className='w-full text-white border-separate bg-blue-600 rounded-md p-2 pr-4 pl-4 font-bold mt-2'>Actualizar</button>
             </form>
           </div>
         </div>
