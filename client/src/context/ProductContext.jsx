@@ -16,10 +16,17 @@ export const useProductContext = () => {
 export function ProductProvider({children}) {
     const [product, setProduct] = useState([])
     const [idProduct, setIdProduct] = useState([])
+    const [errorPut, setErrorPut] = useState(null)
+    const [errorPost, setErrorPost] = useState(null)
 
     const createProduct = async (producto) => {
-        // console.log("responce01: ", producto);
-        const res = await createProductRequest(producto);
+        try {
+            const res = await createProductRequest(producto);
+            setErrorPost(null)
+        } catch (error) {
+            setErrorPost(error)
+            console.log(error);
+        }
     }
 
     const getProducts = async() => {
@@ -52,12 +59,13 @@ export function ProductProvider({children}) {
         }
     }
 
+    
     const actualizarProduct = async (producto) => {
         try {
             await actualizarProductRequest(producto);
-            // Actualiza la lista de productos después de la eliminación
-            // await setProduct(product);
+            setErrorPut(null);
         } catch (error) {
+            setErrorPut(error)
             console.error("Error al actualizar el producto:", error);
         }
     }
@@ -71,7 +79,10 @@ export function ProductProvider({children}) {
             idProduct, 
             setIdProduct,
             deleteProduct,
-            actualizarProduct
+            actualizarProduct,
+            errorPut,
+            setErrorPut,
+            errorPost
         }}>
             {children}
         </ProductContext.Provider>

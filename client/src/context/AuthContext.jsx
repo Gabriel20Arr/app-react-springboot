@@ -29,9 +29,7 @@ export const AuthProvider = ({children}) => {
             }
             const res = await registerRequest(formattedValue)
             setUser(res.data)
-            setIsAuthtenticated(true);
         } catch (error) {
-            setIsAuthtenticated(false);
             setUser(null)
             console.log(error);
         }

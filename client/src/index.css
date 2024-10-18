@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+.btn-close-modal {
+  @apply flex items-center justify-center hover:scale-110 border-2 bg-gray-100 w-8 h-8 pb-2 rounded-full;
+}
+
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

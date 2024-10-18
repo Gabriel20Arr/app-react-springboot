@@ -5,7 +5,10 @@ import HomePages from "./pages/HomePage"
 import ProfilePages from "./pages/ProfilePages"
 import ProtectedRoute from "./ProtectedRoute";
 import Navbar from "./components/navbar";
+import ContactPage from "./pages/ContactPage"
 import { useLocation } from "react-router-dom";
+
+
 const App = () => {
   const location = useLocation();
   const isLogin = location.pathname === "/login"
@@ -20,6 +23,7 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
       <Route path="/" element={<HomePages />}/>
       <Route path="/profile" element={<ProfilePages />}/>
+      <Route path="/contact" element={<ContactPage />}/>
       </Route>
       </Routes>
     </div>

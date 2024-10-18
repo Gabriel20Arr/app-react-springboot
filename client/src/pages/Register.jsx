@@ -7,14 +7,21 @@ const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { singup, user, isAuthtenticated } = useAuthContext();
     const navigate = useNavigate();
-    console.log(user);
-    useEffect(() => {
-        if(isAuthtenticated) navigate("/login")
-    }, [isAuthtenticated])
     
-    const onSubmit = handleSubmit( async (values) => {
-        const res = await singup(values)
-    })
+    useEffect(() => {
+        if(user) {
+          navigate("/login")
+        }
+      }, [isAuthtenticated])
+
+    const onSubmit = handleSubmit(async (values) => {
+        try {
+            await singup(values);
+            navigate("/login");  // Redirige al login después de un registro exitoso
+        } catch (error) {
+            console.log(error);
+        }
+    });
     
   return (
       <div className='w-screen bg-zinc-800 max-w-md rounded-2xl p-2 mt-5'>
