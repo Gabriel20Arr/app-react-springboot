@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { registerRequest, loginRequest, verifyTokenRequest } from "../authentication/auth"
+import { registerRequest, loginRequest, verifyTokenRequest, profileRequest } from "../authentication/auth"
 import Cookies from "js-cookie"
 
 // creamos el context
@@ -40,7 +40,7 @@ export const AuthProvider = ({children}) => {
     const singin = async (user) => {
         try {
             const res = await loginRequest(user)
-            Cookies.set("token", res.data.token);
+            Cookies.set("token", res.data);
             setUser(res.data)
             setIsAuthtenticated(true)
         } catch (error) {
@@ -49,11 +49,15 @@ export const AuthProvider = ({children}) => {
             setUser(null)
         }
     }
+
+    const profile = async (token) => {
+        const res = await profileRequest(token)
+        setUser(res.data)
+    }
     
     useEffect(() => {
         async function checkLogin() {
             const token = Cookies.get("token");  // Asegúrate de que el nombre de la cookie sea correcto
-            console.log("TOKEN: ", token);
              if (!token) {
                  setIsAuthtenticated(false);
                  setLoading(false);
@@ -88,7 +92,8 @@ export const AuthProvider = ({children}) => {
                 isAuthtenticated,
                 setIsAuthtenticated,
                 loading,
-                singin
+                singin,
+                profile
             }}
         >
             {children}

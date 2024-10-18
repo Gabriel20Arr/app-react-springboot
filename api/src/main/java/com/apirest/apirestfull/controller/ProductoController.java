@@ -49,11 +49,19 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getById(@PathVariable("id") int id){
+    public ResponseEntity<?> getById(@PathVariable("id") int id, Principal principal){
         if(!productoService.existsById(id))
             return new ResponseEntity<>(new Mensaje("El producto solicitado no existe"), HttpStatus.NOT_FOUND);
 
+        //? Obtener User
+        Usuario usuario = usuarioService.getByNombreUsuario(principal.getName()).orElseThrow();
+        //? obtenemos el Product
         Producto producto = productoService.getOne(id).orElse(null);
+
+        if (producto != null && producto.getUsuario().getId() != usuario.getId()) {
+            return new ResponseEntity<>(new Mensaje("No tienes permiso para actualizar este producto"), HttpStatus.FORBIDDEN);
+        }
+        
         return new ResponseEntity<>(producto, HttpStatus.OK);
     }
 
@@ -72,6 +80,9 @@ public class ProductoController {
                 0, 
                 productoDto.getNombre(), 
                 productoDto.getPrecio(),
+                productoDto.getPeso(),
+                productoDto.getAltura(),
+                productoDto.getDescripcion(),
                 usuario
             );
             productoService.create(producto);

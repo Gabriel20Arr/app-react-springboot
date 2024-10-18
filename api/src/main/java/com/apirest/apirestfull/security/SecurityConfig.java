@@ -94,11 +94,11 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Habilita CORS para todas las rutas
-                        .allowedOrigins("http://localhost:5173") // Permite el dominio del frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos permitidos
-                        .allowedHeaders("*") // Headers permitidos
-                        .allowCredentials(true); // Permitir credenciales (si estás usando JWT o cookies)
+                // registry.addMapping("/**") // Habilita CORS para todas las rutas
+                //         .allowedOrigins("http://localhost:5173") // Permite el dominio del frontend
+                //         .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos permitidos
+                //         .allowedHeaders("*") // Headers permitidos
+                //         .allowCredentials(true); // Permitir credenciales (si estás usando JWT o cookies)
             }
         };
     }

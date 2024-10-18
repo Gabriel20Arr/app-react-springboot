@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +62,24 @@ public class AuthController {
 
     private final static Logger logger = LoggerFactory.getLogger(AuthController.class);
 
+    @GetMapping("/profile")
+    public ResponseEntity<?> profile(){
+        // Obtener el usuario autenticado desde el contexto de seguridad
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Verificar si el usuario está autenticado
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new ResponseEntity<>(new Mensaje("Usuario no autenticado"), HttpStatus.UNAUTHORIZED);
+        }
+        // Obtener el nombre de usuario autenticado
+        String nombreUsuario = authentication.getName();
+
+        // Buscar el usuario en la base de datos por su nombre de usuario
+        Usuario usuario = usuarioService.getByNombreUsuario(nombreUsuario)
+        .orElseThrow(() -> new RuntimeException("Error: Usuario no encontrado"));
+
+        // Devolver el perfil del usuario autenticado
+        return new ResponseEntity<>(usuario, HttpStatus.OK);
+    }
 
     @PostMapping("/nuevo")
     public ResponseEntity<Usuario> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
