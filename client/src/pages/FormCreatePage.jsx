@@ -1,6 +1,8 @@
 import React from 'react';
 import { useForm } from "react-hook-form";
 import { useProductContext } from '../context/ProductContext';
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import 'sweetalert2/src/sweetalert2.scss'
 
 export const FormCreatePage = ({ closeModal }) => {
   const { createProduct, getProducts, errorPost } = useProductContext();
@@ -11,6 +13,16 @@ export const FormCreatePage = ({ closeModal }) => {
     await getProducts(); // Refrescamos la lista de productos después de la creación
     reset(); // Limpiamos el formulario
     closeModal();
+    Swal.fire({
+      text: 'Producto creado correctamente.',
+      icon: 'success',
+      toast: true, // Esto hace que sea una alerta pequeña como un toast
+      position: 'bottom-end', // Posicionada en la parte inferior derecha
+      showConfirmButton: false, // Sin botón de confirmación
+      timer: 3000, // Desaparece automáticamente después de 3 segundos
+      timerProgressBar: true, // Mostrar barra de progreso
+      width: '300px', // Ajustar el tamaño de la alerta
+    });
   });
 
   return (

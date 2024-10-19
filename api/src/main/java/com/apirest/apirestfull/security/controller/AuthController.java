@@ -2,6 +2,8 @@ package com.apirest.apirestfull.security.controller;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.security.core.AuthenticationException;
 import org.slf4j.Logger;
@@ -81,40 +83,50 @@ public class AuthController {
         return new ResponseEntity<>(usuario, HttpStatus.OK);
     }
 
+
     @PostMapping("/nuevo")
-    public ResponseEntity<Usuario> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) 
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        
-        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario()))
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        
-        if (usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        
+    public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) {
+        // Manejo de errores de validación
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errores = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error -> 
+                errores.put(error.getField(), error.getDefaultMessage())
+            );
+            return ResponseEntity.badRequest().body(errores);
+        }
+
+        // Comprobar si el nombre de usuario ya existe
+        if (usuarioService.existsByNombreUsuario(nuevoUsuario.getNombreUsuario())) {
+            return ResponseEntity.badRequest().body("El nombre de usuario ya está en uso.");
+        }
+
+        // Comprobar si el email ya existe
+        if (usuarioService.existsByEmail(nuevoUsuario.getEmail())) {
+            return ResponseEntity.badRequest().body("El correo electrónico ya está en uso.");
+        }
+
         // Crear el nuevo usuario
         Usuario usuario = new Usuario(
-                nuevoUsuario.getNombre(), 
-                nuevoUsuario.getNombreUsuario(), 
+                nuevoUsuario.getNombre(),
+                nuevoUsuario.getNombreUsuario(),
                 nuevoUsuario.getEmail(),
                 passwordEncoder.encode(nuevoUsuario.getPassword())
         );
-    
+
         // Asignar roles
         Set<Rol> roles = new HashSet<>();
         if (nuevoUsuario.getRoles().contains(RolNombre.ROLE_ADMIN)) {
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
+            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Rol no encontrado")));
         } else {
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
+            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).orElseThrow(() -> new RuntimeException("Rol no encontrado")));
         }
-    
+
         usuario.setRoles(roles);
         usuarioService.save(usuario);
-        
+
         // Devolver el objeto Usuario registrado
         return new ResponseEntity<>(usuario, HttpStatus.CREATED);
     }
-    
     
 
     // Endpoint para el login

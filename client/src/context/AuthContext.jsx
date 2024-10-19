@@ -20,6 +20,7 @@ export const AuthProvider = ({children}) => {
     const [ user, setUser ] = useState(null); 
     const [ isAuthtenticated, setIsAuthtenticated ] = useState(false);
     const [ loading, setLoading ] = useState(true); 
+    const [ errorR, setErrorR ] = useState({}); 
     
     const singup = async ( user ) => {
         try {
@@ -29,9 +30,11 @@ export const AuthProvider = ({children}) => {
             }
             const res = await registerRequest(formattedValue)
             setUser(res.data)
-        } catch (error) {
+            setErrorR(null)
+        } catch  (error) {
+            setErrorR(error.response)
             setUser(null)
-            console.log(error);
+            console.log(error.response.data?.mensaje);
         }
     }
 
@@ -91,7 +94,8 @@ export const AuthProvider = ({children}) => {
                 setIsAuthtenticated,
                 loading,
                 singin,
-                profile
+                profile,
+                errorR
             }}
         >
             {children}

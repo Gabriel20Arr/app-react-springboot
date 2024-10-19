@@ -2,31 +2,37 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useAuthContext }  from '../context/AuthContext';
 import { useNavigate, Link } from "react-router-dom"
+import saludo from "../assets/img/saludo.png"
 
 const Register = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const { singup, user, isAuthtenticated } = useAuthContext();
+    const { singup, user, isAuthtenticated, errorR } = useAuthContext();
     const navigate = useNavigate();
     
     useEffect(() => {
         if(user) {
-          navigate("/login")
+            navigate("/login")
         }
-      }, [isAuthtenticated])
-
+    }, [isAuthtenticated])
+    
     const onSubmit = handleSubmit(async (values) => {
         try {
             await singup(values);
-            navigate("/login");  // Redirige al login después de un registro exitoso
+            // navigate("/login");  // Redirige al login después de un registro exitoso
+            console.log("eeeerrr ", errorR);
         } catch (error) {
             console.log(error);
         }
     });
     
   return (
-      <div className='w-screen bg-zinc-800 max-w-md rounded-2xl p-2 mt-5'>
-      <h1 className='w-full text-4xl font-bold p-3 text-center'>Register</h1>
-      <form onSubmit={onSubmit} className='flex flex-col w-96 mx-auto pb-3 pt-2'>
+    <div className='h-screen flex items-center justify-center max-w-md '>
+    <form onSubmit={onSubmit} className='flex flex-col w-96 mx-auto bg-zinc-800 rounded-2xl p-3 pr-6 pl-6'>
+        <div className='flex items-center justify-center w-full h-24'>
+            <img src={saludo} alt='Hola' className='h-12'/>
+            <h1 className='text-4xl font-bold text-center ml-2'>Registrarse</h1>
+        </div>
+            {errorR?.data ? <p className='w-full bg-red-600 text-white mb-2 pl-2'>{errorR?.data}</p> : ""}
             <input type='text' name='nombre' placeholder='Nombre' 
                 {...register("nombre", { required: true})}
                 className='w-full  text-black max-w-md rounded-md mb-3 p-2'

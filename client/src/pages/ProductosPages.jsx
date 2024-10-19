@@ -5,6 +5,8 @@ import edit from '../assets/img/editar.png';
 import eliminar from '../assets/img/eliminar.png';
 import add from '../assets/img/agregar.png';
 import { FormCreatePage } from './FormCreatePage';
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import 'sweetalert2/src/sweetalert2.scss'
 
 const ProductosPages = () => {
   const { product, getProducts, deleteProduct, actualizarProduct, getProduct, errorPut, setErrorPut } = useProductContext();
@@ -37,10 +39,35 @@ const ProductosPages = () => {
     setOpenEdit(true); // Abre el modal de edición
   };
 
-  const handleDeleteProduct = async (id) => {
-    await deleteProduct(id);
-    await getProducts();
+  const handleDeleteProduct = async (id, nombre) => {
+    if (id) {
+      const result = await Swal.fire({
+        title: 'Eliminar producto',
+        text: `¿Estás seguro de eliminar el producto: ${nombre}?`,
+        icon: 'warning',
+        showCancelButton: true, // Mostrar botón de cancelar
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      });
+  
+      // Si el usuario confirma, result.isConfirmed será true
+      if (result.isConfirmed) {
+        await deleteProduct(id); // Elimina el producto
+        await getProducts(); // Vuelve a cargar los productos
+        Swal.fire({
+          text: 'Producto eliminado correctamente.',
+          icon: 'success',
+          toast: true, // Esto hace que sea una alerta pequeña como un toast
+          position: 'bottom-end', // Posicionada en la parte inferior derecha
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Desaparece automáticamente después de 3 segundos
+          timerProgressBar: true, // Mostrar barra de progreso
+          width: '300px', // Ajustar el tamaño de la alerta
+        });
+      }
+    }
   };
+  
 
   
   const onSubmit = handleSubmit(async (values) => {
@@ -53,6 +80,16 @@ const ProductosPages = () => {
         setSelectedProduct(null);  // Limpiar el producto seleccionado (cierra el modal)
         setOpenEdit(false); // Cerrar el modal de edición
         await getProducts();  // Refrescar la lista de productos
+        Swal.fire({
+          text: 'Producto actulizado correctamente.',
+          icon: 'success',
+          toast: true, // Esto hace que sea una alerta pequeña como un toast
+          position: 'bottom-end', // Posicionada en la parte inferior derecha
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Desaparece automáticamente después de 3 segundos
+          timerProgressBar: true, // Mostrar barra de progreso
+          width: '300px', // Ajustar el tamaño de la alerta
+        });
       }
     } catch (error) {
       setErrorPut(error)
@@ -93,7 +130,7 @@ const ProductosPages = () => {
                 <button onClick={() => handleEditProduct(item)} className='flex items-center justify-center  hover:scale-110'>
                   <img className='h-6 w-6' src={edit} alt="editar" />
                 </button>
-                <button onClick={() => handleDeleteProduct(item.id)} className='flex items-center justify-center hover:scale-110'>
+                <button onClick={() => handleDeleteProduct(item.id, item.nombre)} className='flex items-center justify-center hover:scale-110' disabled={false}>
                   <img className='h-6 w-6' src={eliminar} alt="eliminar" />
                 </button>
               </div>

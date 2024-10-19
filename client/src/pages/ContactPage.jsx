@@ -1,7 +1,6 @@
 import React, { useRef } from 'react'
 import emailjs from "@emailjs/browser"
 import Swal from 'sweetalert2/dist/sweetalert2.js'
-import 'sweetalert2/src/sweetalert2.scss'
 
 const ContactPage = () => {
   const form = useRef();
@@ -45,11 +44,18 @@ const ContactPage = () => {
           console.log(result.text);
           
           Swal.fire({
-            title: 'Exito',
-            text: 'Enviado con exito',
+            text: 'Mensaje enviado correctamente.',
             icon: 'success',
-            confirmButtonText: 'Ok'
-          })
+            toast: true,
+            position: 'bottom-end', 
+            showConfirmButton: false, 
+            timer: 3000, 
+            timerProgressBar: true,
+            width: 'fit-content', 
+            customClass: {
+                popup: 'swal-welcome', 
+            }
+        });
 
           form.current.reset();
         },
@@ -61,9 +67,9 @@ const ContactPage = () => {
 
   return (
     <div className="border-2 border-gray-300 h-full w-full p-6 bg-gray-50 rounded-lg shadow-md">
-    <form ref={form} onSubmit={sendEmail} className="flex flex-col items-center gap-4 border-2 border-gray-300 bg-white p-6 rounded-lg w-full max-w-lg mx-auto shadow-lg">
-      <span className="text-2xl font-bold text-gray-700">Form Help</span>
-      <span className="text-lg font-semibold text-gray-500 text-center">Hear more about how we can help</span>
+    <form ref={form} onSubmit={sendEmail} className="flex flex-col items-center gap-4 border-2 border-gray-300 bg-white p-6 rounded-lg w-full max-w-lg mx-auto shadow-lg text-black">
+      <span className="text-2xl font-bold text-gray-700">Contacto</span>
+      <span className="text-lg font-semibold text-gray-500 text-center">Contactanos para mas informacion</span>
       <input
         type='text'
         name='user_name'
@@ -83,7 +89,7 @@ const ContactPage = () => {
       />
       <button
         type="submit"
-        className="bg-blue-500 text-white font-semibold rounded-md py-2 px-4 hover:bg-blue-600 transition duration-200 ease-in-out"
+        className="w-80 bg-blue-500 text-white font-semibold rounded-md py-2 px-4 hover:bg-blue-600 transition duration-200 ease-in-out"
       >
         Send
       </button>
