@@ -18,8 +18,7 @@ const Register = () => {
     const onSubmit = handleSubmit(async (values) => {
         try {
             await singup(values);
-            // navigate("/login");  // Redirige al login después de un registro exitoso
-            console.log("eeeerrr ", errorR);
+            navigate("/login");  // Redirige al login después de un registro exitoso
         } catch (error) {
             console.log(error);
         }

@@ -105,12 +105,15 @@ public class AuthController {
             return ResponseEntity.badRequest().body("El correo electrónico ya está en uso.");
         }
 
-        // Crear el nuevo usuario
+        // Guardar la contraseña en texto claro en una variable
+        String passwordEnTextoClaro = nuevoUsuario.getPassword();
+
+        // Crear el nuevo usuario y encriptar la contraseña para la base de datos
         Usuario usuario = new Usuario(
                 nuevoUsuario.getNombre(),
                 nuevoUsuario.getNombreUsuario(),
                 nuevoUsuario.getEmail(),
-                passwordEncoder.encode(nuevoUsuario.getPassword())
+                passwordEncoder.encode(passwordEnTextoClaro) // Guardar encriptada en la base de datos
         );
 
         // Asignar roles
@@ -124,8 +127,17 @@ public class AuthController {
         usuario.setRoles(roles);
         usuarioService.save(usuario);
 
-        // Devolver el objeto Usuario registrado
-        return new ResponseEntity<>(usuario, HttpStatus.CREATED);
+        // Crear un objeto de respuesta con la contraseña en texto claro
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", usuario.getId());
+        response.put("nombre", usuario.getNombre());
+        response.put("nombreUsuario", usuario.getNombreUsuario());
+        response.put("email", usuario.getEmail());
+        response.put("roles", usuario.getRoles());
+        response.put("password", passwordEnTextoClaro);  // Devolver la contraseña en texto claro
+
+        // Devolver el objeto Usuario registrado junto con la contraseña en texto claro
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
     
 

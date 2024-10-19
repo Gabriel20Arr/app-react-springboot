@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { useAuthContext }  from '../context/AuthContext';
 import { Link, useNavigate } from "react-router-dom"
@@ -6,17 +6,27 @@ import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import saludo from "../assets/img/saludo.png"
 import saludo2 from "../assets/img/saludo2.png"
+import show from "../assets/img/ojo.png"
+import hidden from "../assets/img/invisible.png"
 
 const Login = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const {  singin, isAuthtenticated } = useAuthContext();
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm();
+    const {  singin, isAuthtenticated, user } = useAuthContext();
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        // console.log(user);
         if(isAuthtenticated) {
           navigate("/")
         }
-    }, [isAuthtenticated])
+
+        // Si hay un usuario registrado, llenamos los campos automáticamente
+        if (user) {
+            setValue("nombreUsuario", user.nombreUsuario); // Asumiendo que tienes 'nombreUsuario' en el objeto user
+            setValue("password", user.password); // La contraseña no debería ser visible por razones de seguridad
+        }
+    }, [isAuthtenticated, user])
 
     const onSubmit = handleSubmit( async (values) => {
         await singin(values);
@@ -40,7 +50,7 @@ const Login = () => {
     });
  
 return (
-    <div className='h-screen flex items-center justify-center max-w-md '>
+    <div className='h-screen flex items-center justify-center max-w-md'>
     <form onSubmit={onSubmit} className='flex flex-col w-96 mx-auto bg-zinc-800 rounded-2xl p-3 pr-6 pl-6'>
         <div className='flex items-center justify-center w-full h-24'>
             <img src={saludo} alt='Hola' className='h-12'/>
@@ -52,10 +62,19 @@ return (
         />
         {errors.nombreUsuario && <span className='w-full text-red-600 font-bold mb-3'>El nombre Usuario es requerido</span>}
         
-        <input type='text' name='password' placeholder='Contraseña'
-        {...register("password", { required: true})}
-        className='w-full  text-black max-w-md rounded-md mb-3 p-2'
-        />
+        <div className='relative mb-3'>
+            <input type={showPassword ? 'text' : 'password'} name='password' placeholder='Contraseña'
+                {...register("password", { required: true })}
+                className='w-full text-black max-w-md rounded-md p-2'
+            />
+            <button 
+                type='button' 
+                onClick={() => setShowPassword(!showPassword)} 
+                className='absolute right-2 top-3'
+            >
+                {showPassword ? <img src={show}  className="h-5 w-5"/> : <img src={hidden} className="h-5 w-5"/>}
+            </button>
+        </div>
         {errors.password && <span className='w-full text-red-600 font-bold mb-3'>La contraseña es requerido</span>}
 
         <p className='w-full text-right p-2'>Aun no tienes cuenta? <Link to="/register" className='text-blue-500'>Crear cuenta</Link></p>
