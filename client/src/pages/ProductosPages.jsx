@@ -192,15 +192,15 @@ const ProductosPages = () => {
               {errors.nombre && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El nombre es requerido o esta duplicado"}</span>}
 
               <label className='w-full text-2xl'>Precio</label>
-              <input type='number' placeholder='Precio' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.precio} {...register("precio")} />
+              <input type='number' placeholder='Precio' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.precio} {...register("precio", {min: 0})} min="0"/>
               {errors.precio && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El precio es requerido"}</span>}
             
               <label className='w-full text-2xl'>Peso</label>
-              <input type='number' placeholder='Peso' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.peso} {...register("peso")} />
+              <input type='number' placeholder='Peso' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.peso} {...register("peso", {min: 0})} min="0"/>
               {errors.peso && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El peso es requerido"}</span>}
               
               <label className='w-full text-2xl'>Altura</label>
-              <input type='number' placeholder='Altura' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.altura} {...register("altura")} />
+              <input type='number' placeholder='Altura' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.altura} {...register("altura", {min: 0})} min="0"/>
               {errors.altura && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El altura es requerido"}</span>}
               
               <label className='w-full text-2xl'>Descripción</label>
