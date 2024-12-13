@@ -113,7 +113,7 @@ const ProductosPages = () => {
   };
 
   return (
-    <div className="w-full h-svh flex flex-col items-center text-black font-bold text-4xl p-8">
+    <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-4xl p-8">
       <div className="w-full flex items-center justify-between text-black ">
         <h1 className="text-4xl font-bold mb-4 ">Lista de Productos</h1>
         <button onClick={openCreateModal} className='flex items-center justify-center hover:scale-110'>
