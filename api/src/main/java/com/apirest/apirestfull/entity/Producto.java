@@ -32,6 +32,7 @@ public class Producto implements Serializable{
     private Float peso;
     private Float altura;
     private String descripcion;
+    private String urlimg;
     
     // Relacion con la tabla usaurios
     @ManyToOne(fetch = FetchType.LAZY)

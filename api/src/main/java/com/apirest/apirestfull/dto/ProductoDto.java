@@ -18,13 +18,15 @@ public class ProductoDto {
     private Float altura;
     @Min(0)
     private String descripcion;
+    private String urlimg;
     
-    public ProductoDto(@NotBlank String nombre, @Min(0) Float precio, Float peso, Float altura, @Min(0) String descripcion) {
+    public ProductoDto(@NotBlank String nombre, @Min(0) Float precio, Float peso, Float altura, @Min(0) String descripcion, String urlimg) {
         this.nombre = nombre;
         this.precio = precio;
         this.peso = peso;
         this.altura = altura;
         this.descripcion = descripcion;
+        this.urlimg = urlimg;
     }
 
     @Override
