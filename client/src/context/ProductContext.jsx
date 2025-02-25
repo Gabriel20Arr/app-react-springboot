@@ -20,8 +20,10 @@ export function ProductProvider({children}) {
     const [errorPost, setErrorPost] = useState(null)
 
     const createProduct = async (producto) => {
+        console.log("prod: ", producto);
         try {
             const res = await createProductRequest(producto);
+            console.log(res);
             setErrorPost(null)
         } catch (error) {
             setErrorPost(error)
@@ -33,7 +35,7 @@ export function ProductProvider({children}) {
         const token = Cookies.get("token");
         const res = await productsRequest(token);
         setProduct(res.data)
-        // console.log("getPorducts: ", res);  
+        console.log("getPorducts: ", res);  
     }
 
     const getProduct = async (id) => {

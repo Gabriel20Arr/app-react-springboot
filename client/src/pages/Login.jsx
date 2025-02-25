@@ -11,7 +11,7 @@ import hidden from "../assets/img/invisible.png"
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm();
-    const {  singin, isAuthtenticated, user } = useAuthContext();
+    const {  singin, isAuthtenticated, user, errorL } = useAuthContext();
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
@@ -23,14 +23,18 @@ const Login = () => {
 
         // Si hay un usuario registrado, llenamos los campos automáticamente
         if (user) {
-            setValue("nombreUsuario", user.nombreUsuario); // Asumiendo que tienes 'nombreUsuario' en el objeto user
-            setValue("password", user.password); // La contraseña no debería ser visible por razones de seguridad
+            setValue("nombreUsuario", user.nombreUsuario);
+            setValue("password", user.password); 
         }
+
+        errorL
     }, [isAuthtenticated, user])
 
     const onSubmit = handleSubmit( async (values) => {
         await singin(values);
-        Swal.fire({
+        await errorL;
+        if(errorL){
+            return Swal.fire({
             html: `
                 <div style="display: flex; align-items: center;">
                     <img src="${saludo2}" style="width: 35px; height: 35px; margin-right: 10px;" />
@@ -47,6 +51,7 @@ const Login = () => {
                 popup: 'swal-welcome', 
             }
         });
+        }
     });
  
 return (
@@ -76,6 +81,7 @@ return (
             </button>
         </div>
         {errors.password && <span className='w-full text-red-600 font-bold mb-3'>La contraseña es requerido</span>}
+        <span className='w-full text-white font-bold mb-3'>{errorL?.response?.data?.mensaje}</span>
 
         <p className='w-full text-right p-2'>Aun no tienes cuenta? <Link to="/register" className='text-blue-500'>Crear cuenta</Link></p>
         <button type='submit' className='w-full text-white border-separate bg-blue-600 rounded-md p-2 font-bold my-2'>Login</button>

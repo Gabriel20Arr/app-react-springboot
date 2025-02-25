@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import imgCarrusel1 from "../assets/img/carrusel/img-1-c.png";
-import imgCarrusel2 from "../assets/img/carrusel/img-2-c.png";
-import imgCarrusel3 from "../assets/img/carrusel/img-3-c.png";
-import imgCarrusel4 from "../assets/img/carrusel/img-4-c.png";
+import imgCarrusel1 from "../assets/img/carrusel/diseño-1.png";
+import imgCarrusel2 from "../assets/img/carrusel/diseño2.png";
+import imgCarrusel3 from "../assets/img/carrusel/diseño3.png";
+import imgCarrusel4 from "../assets/img/carrusel/diseño4.png";
 
 const items = [imgCarrusel1, imgCarrusel2, imgCarrusel3, imgCarrusel4];
 
@@ -27,7 +27,7 @@ const Carrusel = () => {
   };
 
   return (
-    <div className="relative w-full h-[280px] mx-auto overflow-hidden shadow-lg z-0 mt-[120px]">
+    <div className="relative w-full h-[280px] mx-auto overflow-hidden shadow-lg mt-[50px] bg-red-700 z-0">
       {/* Slides */}
       <div
         className="flex transition-transform duration-500"

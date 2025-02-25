@@ -21,6 +21,7 @@ export const AuthProvider = ({children}) => {
     const [ isAuthtenticated, setIsAuthtenticated ] = useState(false);
     const [ loading, setLoading ] = useState(true); 
     const [ errorR, setErrorR ] = useState({}); 
+    const [ errorL, setErrorL ] = useState(null); 
     
     const singup = async ( user ) => {
         try {
@@ -46,6 +47,7 @@ export const AuthProvider = ({children}) => {
             setIsAuthtenticated(true)
         } catch (error) {
             console.log(error);
+            setErrorL(error)
             setIsAuthtenticated(false)
             setUser(null)
         }
@@ -95,7 +97,8 @@ export const AuthProvider = ({children}) => {
                 loading,
                 singin,
                 profile,
-                errorR
+                errorR,
+                errorL
             }}
         >
             {children}

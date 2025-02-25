@@ -91,6 +91,11 @@
 			<artifactId>nimbus-jose-jwt</artifactId>
 			<version>9.23</version>  <!-- Verifica cuál es la última versión disponible -->
 		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http44</artifactId>
+			<version>1.39.0</version>
+		</dependency>
 
 	</dependencies>
 

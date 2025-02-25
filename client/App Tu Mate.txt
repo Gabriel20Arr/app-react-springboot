@@ -1,0 +1,45 @@
+App Tu Mate (spring Boot - MySQL - react - Tailwind)
+
+1- Header:
+	1- Primer seccion: 
+		- Inicio
+		- Productos con un menu para el filtrado de todos los productos
+		- Sobre Nosotros
+		- Contacto
+		- Buscador
+	2- Segunda seccion:
+		- Perfil
+		- Logo
+		- carito de compras 
+
+2- Carrusel 
+	- Tenemos imagenes publicitando productos mas vendidos o en oferta
+
+3- Seccion de ayuda sobre diferentes sistemas de la web
+	- Envio (Hacemos envíos a cualquier parte de Argentina)
+	- Pasarela de pago (Pasos a seguir para realizar una compra desde la web)
+	- Sucursal (Lugar de la sucursal)
+	- Años en el sector (Experiencia en el sector de la venta)
+
+4- Productos destacados
+	- Mostramos los productos mas vendidos o seleccionados por el admin
+	- mostramos en forma de carrusel y un máximo de 15p
+	- Debe ser seleccionable y que lo lleve directo a la pagina de compra
+
+5- Productos aletorios 
+	- Debe ser seleccionable y que lo lleve directo a la pagina de compra
+	- Mostramos algunos productos
+	- Los productos deben tener
+		- Imagen
+		- Precio
+		- Breve descripción
+		- Agregar al carrito
+		- Stock disponible
+		- Si tiene envió gratis
+		- Posible Puntuación con estrellas o similar
+
+
+
+
+
+

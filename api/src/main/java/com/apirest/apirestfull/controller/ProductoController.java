@@ -83,7 +83,6 @@ public class ProductoController {
                 productoDto.getPeso(),
                 productoDto.getAltura(),
                 productoDto.getDescripcion(),
-                productoDto.getUrlimg(),
                 usuario
             );
             productoService.create(producto);
@@ -120,7 +119,6 @@ public class ProductoController {
         producto.setPeso(productoDto.getPeso());
         producto.setAltura(productoDto.getAltura());
         producto.setDescripcion(productoDto.getDescripcion());
-        producto.setUrlimg(productoDto.getUrlimg());
         productoService.create(producto);
         
         return new ResponseEntity<Mensaje>(new Mensaje("Producto actulizado correctamente"), HttpStatus.OK);
@@ -145,4 +143,5 @@ public class ProductoController {
         return new ResponseEntity<Mensaje>(new Mensaje("Producto eliminado correctamente"), HttpStatus.OK);
         
     }            
+
 }

@@ -26,7 +26,6 @@ public class ProductoDto {
         this.peso = peso;
         this.altura = altura;
         this.descripcion = descripcion;
-        this.urlimg = urlimg;
     }
 
     @Override

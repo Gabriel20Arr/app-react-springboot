@@ -8,6 +8,9 @@ import { FormCreatePage } from './FormCreatePage';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 
+import img from "../assets/img/img-mate-7.jpg"
+import { Link } from 'react-router-dom';
+
 const ProductosPages = () => {
   const { product, getProducts, deleteProduct, actualizarProduct, getProduct, errorPut, setErrorPut } = useProductContext();
   const [openCreate, setOpenCreate] = useState(false); // Modal para el form de creación
@@ -15,15 +18,17 @@ const ProductosPages = () => {
   const [selectedProduct, setSelectedProduct] = useState(null); // Estado para producto seleccionado para editar
   const [openEdit, setOpenEdit] = useState(false); // Modal para el form de edición
   const [productDetalle, setProductDetalle] = useState(null); // Estado para detalles del producto
-  const { register, handleSubmit, formState: {errors} } = useForm();
+  const { register, handleSubmit, formState: {errors}, reset  } = useForm();
   
   useEffect(() => {
     async function getP() {
-      await getProducts();
+      const dat=  await getProducts();
+      console.log(dat);
     }
     getP();
   }, []);
-
+  console.log("Products: ", product);
+  
   // Abrir y cerrar el modal de creación
   const openCreateModal = () => {
     setOpenCreate(true);
@@ -33,8 +38,23 @@ const ProductosPages = () => {
     setOpenCreate(false);
   };
 
+  // Cuando cambia el selectedProduct se resetea el form
+  useEffect(() => {
+    if (selectedProduct) {
+      reset({
+        nombre: selectedProduct.nombre,
+        precio: selectedProduct.precio,
+        peso: selectedProduct.peso,
+        altura: selectedProduct.altura,
+        descripcion: selectedProduct.descripcion
+      });
+    }
+  }, [selectedProduct, reset]);
+  
+
   // Función para abrir el modal de actualización
   const handleEditProduct = (item) => {
+    console.log("Item: ", item);
     setSelectedProduct(item);
     setOpenEdit(true); // Abre el modal de edición
   };
@@ -76,7 +96,7 @@ const ProductosPages = () => {
     
     try {
       if (selectedProduct) {
-        await actualizarProduct({ ...values, id: selectedProduct.id });
+        await actualizarProduct({...values, id: selectedProduct.id });
         setSelectedProduct(null);  // Limpiar el producto seleccionado (cierra el modal)
         setOpenEdit(false); // Cerrar el modal de edición
         await getProducts();  // Refrescar la lista de productos
@@ -92,40 +112,40 @@ const ProductosPages = () => {
         });
       }
     } catch (error) {
+      // Aquí ya se maneja el error en actualizarProduct
       setErrorPut(error)
       console.log("Error al actualizar producto: ", error);
-      // Aquí ya se maneja el error en actualizarProduct
     }
   });
   
-  const handleDetalle = async (id) => {
-    try {
-      const res = await getProduct(id);  // Obtenemos los detalles completos del producto
-      if (res) {
-        setProductDetalle(res);
-        setOpenDetalle(true);
-      } else {
-        console.error("El producto no se encontró.");
-      }
-    } catch (error) {
-      console.error("Error al obtener el producto:", error);
-    }
-  };
+  // const handleDetalle = async (id) => {
+  //   try {
+  //     const res = await getProduct(id);  // Obtenemos los detalles completos del producto
+  //     if (res) {
+  //       setProductDetalle(res);
+  //       setOpenDetalle(true);
+  //     } else {
+  //       console.error("El producto no se encontró.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al obtener el producto:", error);
+  //   }
+  // };
 
   return (
     <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-4xl p-8">
       <div className="w-full flex items-center justify-between text-black ">
-        <h1 className="text-4xl font-bold mb-4 ">Lista de Productos</h1>
+        <h1 className="text-4xl font-bold mb-4 ">Algunos Productos</h1>
         <button onClick={openCreateModal} className='flex items-center justify-center hover:scale-110'>
           <img className='h-8 w-8' src={add} alt="add" />
         </button>
       </div>
 
       {/* MOSTRAMOS PRODUCTOS */}
-      <div className="w-full grid grid-cols-3 gap-4">
+      <div className="flex flex-wrap justify-start gap-4 w-full">
         {product.length > 0 ? (
           product.map((item) => (
-            <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg h-40 transition-all hover:scale-105 hover:shadow-lg">
+            <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] transition-all hover:scale-105 hover:shadow-lg">
               <div className='w-full flex items-center justify-end space-x-4 p-3'>
                 <button onClick={() => handleEditProduct(item)} className='flex items-center justify-center  hover:scale-110'>
                   <img className='h-6 w-6' src={edit} alt="editar" />
@@ -134,12 +154,14 @@ const ProductosPages = () => {
                   <img className='h-6 w-6' src={eliminar} alt="eliminar" />
                 </button>
               </div>
-              <div className='flex flex-col items-start justify-center'>
-                <h2 className="text-2xl font-semibold">{item.nombre}</h2>
-                <p className="text-2xl font-semibold">Precio: ${item.precio}</p>
-                <span className="text-xl text-blue-500 font-semibold border-blue-500 border-b-2 hover:scale-90">
-                  <button onClick={() => handleDetalle(item.id)}>Ver más...</button>
-                </span>
+              
+              <div onClick={() => handleDetalle(item.id)} className='flex flex-col justify-center h-fit w-full'>
+              <Link to={`/producto-detalle/${item.id}`}>
+                <img src={img} className='h-auto w-58 mb-1'/>
+                <h2 className="font-heading text-2xl truncate mb-1">{item.nombre}</h2>
+                <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
+                <span className='text-price  text-xl'>${item.precio}</span>
+              </Link>
               </div>
             </div>
           ))
@@ -147,6 +169,7 @@ const ProductosPages = () => {
           <p>No hay productos disponibles.</p>
         )}
       </div>
+
 
       {/* FORMULARIO DE DETALLES DEL PRODUCTO */}
       {openDetalle && productDetalle && (
@@ -177,6 +200,7 @@ const ProductosPages = () => {
         </div>
       )}
 
+
       {/* FORMULARIO DE ACTUALIZACIÓN */}
       {openEdit && selectedProduct && (
         <div className='fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50'> 
@@ -188,23 +212,23 @@ const ProductosPages = () => {
               </div>
               
               <label className='w-full text-2xl'>Nombre</label>
-              <input type='text' placeholder='Nombre' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.nombre} {...register("nombre")} />
+              <input type='text' placeholder='Nombre' className='p-2 mb-2 rounded-lg w-full text-lg' {...register("nombre")} />
               {errors.nombre && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El nombre es requerido o esta duplicado"}</span>}
 
               <label className='w-full text-2xl'>Precio</label>
-              <input type='number' placeholder='Precio' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.precio} {...register("precio", {min: 0})} min="0"/>
+              <input type='number' placeholder='Precio' className='p-2 mb-2 rounded-lg w-full text-lg'  {...register("precio", {min: 0})} min="0"/>
               {errors.precio && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El precio es requerido"}</span>}
             
               <label className='w-full text-2xl'>Peso</label>
-              <input type='number' placeholder='Peso' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.peso} {...register("peso", {min: 0})} min="0"/>
+              <input type='number' placeholder='Peso' className='p-2 mb-2 rounded-lg w-full text-lg'  {...register("peso", {min: 0})} min="0"/>
               {errors.peso && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El peso es requerido"}</span>}
               
               <label className='w-full text-2xl'>Altura</label>
-              <input type='number' placeholder='Altura' className='p-2 mb-2 rounded-lg w-full text-lg' defaultValue={selectedProduct.altura} {...register("altura", {min: 0})} min="0"/>
+              <input type='number' placeholder='Altura' className='p-2 mb-2 rounded-lg w-full text-lg'  {...register("altura", {min: 0})} min="0"/>
               {errors.altura && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El altura es requerido"}</span>}
               
               <label className='w-full text-2xl'>Descripción</label>
-              <textarea placeholder='Descripción' className='p-2 mb-2 rounded-lg min-h-20 w-full text-lg' defaultValue={selectedProduct.descripcion} {...register("descripcion")} />
+              <textarea placeholder='Descripción' className='p-2 mb-2 rounded-lg min-h-20 w-full text-lg'  {...register("descripcion")} />
               {errors.descripcion && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El descripcion es requerido"}</span>}
               
               <button type='submit'  className='w-full text-white border-separate bg-blue-600 rounded-md p-2 pr-4 pl-4 font-bold mt-2'>Actualizar</button>

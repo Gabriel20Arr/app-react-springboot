@@ -12,7 +12,7 @@ const ProfilePages = () => {
   }, [])
   
   return (
-    <div className="w-full h-screen mt-20 flex items-start justify-center text-black text-4xl m-0 p-0 bg-gray-100">
+    <div className="w-full h-screen flex items-center justify-center text-black text-4xl m-0 p-0 bg-gray-100">
       {user ? ( 
           <div className="flex  items-center justify-center h-[50%] w-[90%]">
             <div className='flex flex-col items-center justify-start border-2 bg-white shadow-md rounded-sm mr-5 h-full w-80 p-3'>

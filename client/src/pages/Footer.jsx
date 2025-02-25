@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer = () => {
   return (
-    <div className="w-full flex justify-between bg-blue-400 text-black p-5">
+    <div className="w-full flex justify-between bg-blue-400 text-black p-5 relative bottom-0">
       <p> © Copyright Tu Mate - 2024 </p>
 
       <p> 
