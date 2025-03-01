@@ -5,8 +5,10 @@ import edit from '../assets/img/editar.png';
 import eliminar from '../assets/img/eliminar.png';
 import add from '../assets/img/agregar.png';
 import { FormCreatePage } from './FormCreatePage';
+
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
+import { TbFilterCode, TbFilterDollar } from "react-icons/tb";
 
 import img from "../assets/img/img-mate-7.jpg"
 import { Link } from 'react-router-dom';
@@ -18,6 +20,9 @@ const ProductosPages = () => {
   const [selectedProduct, setSelectedProduct] = useState(null); // Estado para producto seleccionado para editar
   const [openEdit, setOpenEdit] = useState(false); // Modal para el form de edición
   const [productDetalle, setProductDetalle] = useState(null); // Estado para detalles del producto
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [category, setCategory] = useState('');
+  const [sortType, setSortType] = useState('');
   const { register, handleSubmit, formState: {errors}, reset  } = useForm();
   
   useEffect(() => {
@@ -27,7 +32,34 @@ const ProductosPages = () => {
     }
     getP();
   }, []);
-  console.log("Products: ", product);
+
+  // console.log("Products: ", product);
+  useEffect(() => {
+    let productsFiltered = [...product];
+    
+    if (category) {
+      productsFiltered = productsFiltered.filter(p => p.categoria === category);
+    }
+
+    switch (sortType) {
+      case 'priceAsc':
+        productsFiltered.sort((a, b) => a.precio - b.precio);
+        break;
+      case 'priceDesc':
+        productsFiltered.sort((a, b) => b.precio - a.precio);
+        break;
+      case 'nameAsc':
+        productsFiltered.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        break;
+      case 'nameDesc':
+        productsFiltered.sort((a, b) => b.nombre.localeCompare(a.nombre));
+        break;
+      default:
+        break;
+    }
+
+    setFilteredProducts(productsFiltered);
+  }, [product, category, sortType]);
   
   // Abrir y cerrar el modal de creación
   const openCreateModal = () => {
@@ -133,7 +165,7 @@ const ProductosPages = () => {
   // };
 
   return (
-    <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-12">
+    <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-12 bg-white">
       <div className="w-full flex items-center justify-between text-black ">
         <h1 className="font-bold mb-4 text-2xl">Algunos Productos</h1>
         <button onClick={openCreateModal} className='flex items-center justify-center hover:scale-110'>
@@ -141,10 +173,35 @@ const ProductosPages = () => {
         </button>
       </div>
 
+      <div className="w-full flex items-center justify-start mb-4">
+      <TbFilterCode size={"1.5rem"} />
+      <select onChange={(e) => setCategory(e.target.value)} className="bg-white p-2 mr-10 w-fit">
+        <option value="">Todas las categorías</option>
+        <option value="">Mates</option>
+        <option value="">Termos</option>
+        <option value="">Yerbas</option>
+        <option value="">Bombillas</option>
+        {/*
+        {[...new Set(product.map(p => p.categoria))].map(cat => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+        */}
+      </select>
+      
+      <TbFilterDollar size={"1.5rem"}/>
+      <select onChange={(e) => setSortType(e.target.value)} className="bg-white p-2">
+        <option value="">Ordenar por</option>
+        <option value="priceAsc">Menor a Mayor</option>
+        <option value="priceDesc">Mayor a Menor</option>
+        <option value="nameAsc">A - Z</option>
+        <option value="nameDesc">Z - A</option>
+      </select>
+    </div>
+
       {/* MOSTRAMOS PRODUCTOS */}
       <div className="flex flex-wrap justify-start gap-4 w-full text-xl">
-        {product.length > 0 ? (
-          product.map((item) => (
+      {filteredProducts.length > 0 ? (
+        filteredProducts.map((item) => (
             <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] transition-all hover:scale-105 hover:shadow-lg">
               <div className='w-full flex items-center justify-end space-x-4 p-3'>
                 <button onClick={() => handleEditProduct(item)} className='flex items-center justify-center  hover:scale-110'>

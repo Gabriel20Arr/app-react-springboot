@@ -14,6 +14,7 @@ import SeccionExperiencia from "./components/SeccionAyuda/SeccionExperiencia"
 import ProductosPages from "./pages/ProductosPages";
 import SobreNosotros from "./pages/SobreNosotros";
 import ProductoDetalle from "./components/ProductoDetalle";
+import DashboardAdmin from "./components/DashboardAdmin";
 
 import { useLocation } from "react-router-dom";
 
@@ -42,6 +43,7 @@ const App = () => {
         <Route path="/productos" element={< ProductosPages />}/>
         <Route path="/producto-detalle/:id" element={< ProductoDetalle />}/>
         <Route path="/aboutMe" element={< SobreNosotros />}/>
+        <Route path="/dash-admin" element={< DashboardAdmin />}/>
         </Route>
       </Routes>
 

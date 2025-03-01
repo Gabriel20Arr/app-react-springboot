@@ -35,6 +35,7 @@ const Navbar = () => {
             <Link to="/productos" className="text-white hover:text-gray-300">Productos</Link>
             <Link to="/aboutMe" className="text-white hover:text-gray-300">Sobre Nosotros</Link>
             <Link to="/contact" className="text-white hover:text-gray-300">Contacto</Link>
+            <Link to="/dash-admin" className="text-white hover:text-gray-300">Dashboard</Link>
           </div>
 
           {/* Buscador */}
