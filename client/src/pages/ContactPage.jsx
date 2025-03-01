@@ -89,7 +89,7 @@ const ContactPage = () => {
             />
             <button
               type="submit"
-              className="bg-blue-500 text-white font-semibold rounded-md py-2 px-4 hover:bg-blue-600 transition duration-200 ease-in-out"
+              className="bg-green-700 text-white font-semibold rounded-md py-2 px-4 hover:bg-blue-600 transition duration-200 ease-in-out"
             >
               Enviar Mensaje
             </button>

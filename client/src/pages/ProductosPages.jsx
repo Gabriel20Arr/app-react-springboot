@@ -133,16 +133,16 @@ const ProductosPages = () => {
   // };
 
   return (
-    <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-4xl p-8">
+    <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-12">
       <div className="w-full flex items-center justify-between text-black ">
-        <h1 className="text-4xl font-bold mb-4 ">Algunos Productos</h1>
+        <h1 className="font-bold mb-4 text-2xl">Algunos Productos</h1>
         <button onClick={openCreateModal} className='flex items-center justify-center hover:scale-110'>
           <img className='h-8 w-8' src={add} alt="add" />
         </button>
       </div>
 
       {/* MOSTRAMOS PRODUCTOS */}
-      <div className="flex flex-wrap justify-start gap-4 w-full">
+      <div className="flex flex-wrap justify-start gap-4 w-full text-xl">
         {product.length > 0 ? (
           product.map((item) => (
             <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] transition-all hover:scale-105 hover:shadow-lg">
@@ -158,9 +158,9 @@ const ProductosPages = () => {
               <div onClick={() => handleDetalle(item.id)} className='flex flex-col justify-center h-fit w-full'>
               <Link to={`/producto-detalle/${item.id}`}>
                 <img src={img} className='h-auto w-58 mb-1'/>
-                <h2 className="font-heading text-2xl truncate mb-1">{item.nombre}</h2>
+                <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
                 <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
-                <span className='text-price  text-xl'>${item.precio}</span>
+                <span className='text-price  text-lg'>${item.precio}</span>
               </Link>
               </div>
             </div>

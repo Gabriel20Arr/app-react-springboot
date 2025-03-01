@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
+import Register from "./pages/Sesion/Register";
+import Login from "./pages/Sesion/Login";
 import HomePages from "./pages/HomePage"
 import ProfilePages from "./pages/ProfilePages"
 import ProtectedRoute from "./ProtectedRoute";
@@ -11,7 +11,8 @@ import SeccionEnvio from "./components/SeccionAyuda/SeccionEnvio";
 import SeccionPasarelaPago from "./components/SeccionAyuda/SeccionPasarelaPago"
 import SeccionSucursal from "./components/SeccionAyuda/SeccionSucursal"
 import SeccionExperiencia from "./components/SeccionAyuda/SeccionExperiencia"
-
+import ProductosPages from "./pages/ProductosPages";
+import SobreNosotros from "./pages/SobreNosotros";
 import ProductoDetalle from "./components/ProductoDetalle";
 
 import { useLocation } from "react-router-dom";
@@ -38,7 +39,9 @@ const App = () => {
         <Route path="/pasarela-pago" element={< SeccionPasarelaPago />}/>
         <Route path="/sucursal" element={< SeccionSucursal />}/>
         <Route path="/experiencia" element={< SeccionExperiencia />}/>
+        <Route path="/productos" element={< ProductosPages />}/>
         <Route path="/producto-detalle/:id" element={< ProductoDetalle />}/>
+        <Route path="/aboutMe" element={< SobreNosotros />}/>
         </Route>
       </Routes>
 

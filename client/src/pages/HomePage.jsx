@@ -3,7 +3,6 @@ import Carrusel from '../components/Carrusel'
 import { SeccionAyuda } from '../components/SeccionAyuda/SeccionAyuda'
 import ProductosDestacados from '../components/ProductosDestacados'
 import ProductosPages from "../pages/ProductosPages"
-import ProductoDetalle from '../components/ProductoDetalle'
 
 const HomePage = () => {
   return (
@@ -12,7 +11,6 @@ const HomePage = () => {
       <SeccionAyuda />
       <ProductosDestacados />
       <ProductosPages />
-      <ProductoDetalle />
     </div>
   )
 }

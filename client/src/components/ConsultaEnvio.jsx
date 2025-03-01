@@ -34,7 +34,7 @@ export default function ConsultaEnvio({}) {
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="max-w-md">
       {/* Input de Código Postal */}
       <div className="flex items-center gap-2">
         <input
@@ -46,7 +46,7 @@ export default function ConsultaEnvio({}) {
         />
         <button
           onClick={consultarEnvio}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700"
+          className="bg-green-700 text-white px-4 py-2 rounded-md text-sm hover:bg-green-800 font-semibold"
         >
           OK
         </button>

@@ -29,11 +29,11 @@ const Navbar = () => {
     <nav className="w-full font-heading">
       <div className="w-full">
         {/* Primer navbar */}
-        <div className="w-full h-12 flex justify-between bg-primary font-bold py-2 px-5 border-b border-gray-300 fixed z-20">
+        <div className="w-full h-12 flex justify-between bg-green-600 font-bold py-2 px-5 border-b border-gray-300 fixed z-20">
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-white hover:text-gray-300">Inicio</Link>
             <Link to="/productos" className="text-white hover:text-gray-300">Productos</Link>
-            <Link to="/about" className="text-white hover:text-gray-300">Sobre Nosotros</Link>
+            <Link to="/aboutMe" className="text-white hover:text-gray-300">Sobre Nosotros</Link>
             <Link to="/contact" className="text-white hover:text-gray-300">Contacto</Link>
           </div>
 
@@ -45,7 +45,7 @@ const Navbar = () => {
         </div>
 
         {/* Segundo navbar */}
-        <div className="w-full flex justify-between items-center bg-primary font-bold py-3 px-5 relative top-12 z-10">
+        <div className="w-full flex justify-between items-center bg-green-600 font-bold py-3 px-5 relative top-12 z-10">
           {/* Imagen de perfil */}
           <div className="relative">
             <button 

@@ -10,8 +10,8 @@ const SeccionSucursal = () => {
         {/* Ubicación */}
         <div className="bg-white p-6 shadow-md rounded-lg">
           <h2 className="text-xl font-semibold mb-4">Ubicación</h2>
-          <p>📍 Argentina, Córdoba</p>
-          <p>Calle 3, 891</p>
+          <p>Schierano 393</p>
+          <p>Etruria, Córdoba</p>
         </div>
 
         {/* Horarios de Atención */}
@@ -27,12 +27,13 @@ const SeccionSucursal = () => {
         {/* Mapa - Ocupa toda la fila */}
         <div className="bg-white p-6 shadow-md rounded-lg col-span-1 md:col-span-3">
           <h2 className="text-xl font-semibold mb-4">Cómo Llegar</h2>
-          <iframe
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3263.6104984836315!2d-63.24982162733161!3d-32.938361951083515!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95ce9f098fc64993%3A0xae4f29d4d4576967!2sMunicipalidad%20de%20Etruria!5e0!3m2!1ses-419!2sar!4v1740798894746!5m2!1ses-419!2sar" 
+            allowfullscreen="" 
+            loading="lazy" 
             className="w-full h-80 rounded-lg"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.546563254604!2d-99.17097602570941!3d19.39100384202619!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff9e8e4a90c7%3A0x47a4bda595ae622e!2sEjemplo%20Sucursal!5e0!3m2!1ses-419!2s!4v1707849363120"
-            allowFullScreen=""
-            loading="lazy"
-          ></iframe>
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
         </div>
       </div>
     </div>
