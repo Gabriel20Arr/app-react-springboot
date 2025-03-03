@@ -34,6 +34,7 @@ public class Producto implements Serializable{
     private Float peso;
     private Float altura;
     private String descripcion;
+    private boolean featured;
     
     // @OneToOne(cascade = CascadeType.ALL)
     // @JoinColumn(name = "image_id", referencedColumnName = "id")

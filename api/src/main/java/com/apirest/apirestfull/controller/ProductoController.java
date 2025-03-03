@@ -83,6 +83,7 @@ public class ProductoController {
                 productoDto.getPeso(),
                 productoDto.getAltura(),
                 productoDto.getDescripcion(),
+                productoDto.getFeatured(),
                 usuario
             );
             productoService.create(producto);
@@ -119,6 +120,7 @@ public class ProductoController {
         producto.setPeso(productoDto.getPeso());
         producto.setAltura(productoDto.getAltura());
         producto.setDescripcion(productoDto.getDescripcion());
+        producto.setFeatured(productoDto.getFeatured());
         productoService.create(producto);
         
         return new ResponseEntity<Mensaje>(new Mensaje("Producto actulizado correctamente"), HttpStatus.OK);

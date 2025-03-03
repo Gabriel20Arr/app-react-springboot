@@ -19,18 +19,20 @@ public class ProductoDto {
     @Min(0)
     private String descripcion;
     private String urlimg;
+    private Boolean featured;
     
-    public ProductoDto(@NotBlank String nombre, @Min(0) Float precio, Float peso, Float altura, @Min(0) String descripcion, String urlimg) {
+    public ProductoDto(@NotBlank String nombre, @Min(0) Float precio, Float peso, Float altura, @Min(0) String descripcion, String urlimg, Boolean featured) {
         this.nombre = nombre;
         this.precio = precio;
         this.peso = peso;
         this.altura = altura;
         this.descripcion = descripcion;
+        this.featured = featured;
     }
 
     @Override
     public String toString() {
-        return "ProductoDto [nombre=" + nombre + ", precio=" + precio + ", descripcion=" + descripcion + "]";
+        return "ProductoDto [nombre=" + nombre + ", precio=" + precio + ", descripcion=" + descripcion + "featured=" + featured + "]";
     }
     
 }

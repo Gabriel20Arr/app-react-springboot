@@ -28,7 +28,6 @@ const ProductosPages = () => {
   useEffect(() => {
     async function getP() {
       const dat=  await getProducts();
-      console.log(dat);
     }
     getP();
   }, []);
@@ -78,7 +77,8 @@ const ProductosPages = () => {
         precio: selectedProduct.precio,
         peso: selectedProduct.peso,
         altura: selectedProduct.altura,
-        descripcion: selectedProduct.descripcion
+        descripcion: selectedProduct.descripcion,
+        feactured: selectedProduct.feactured
       });
     }
   }, [selectedProduct, reset]);
@@ -91,6 +91,7 @@ const ProductosPages = () => {
     setOpenEdit(true); // Abre el modal de edición
   };
 
+  
   const handleDeleteProduct = async (id, nombre) => {
     if (id) {
       const result = await Swal.fire({
@@ -102,20 +103,20 @@ const ProductosPages = () => {
         cancelButtonText: 'Cancelar'
       });
   
-      // Si el usuario confirma, result.isConfirmed será true
-      if (result.isConfirmed) {
-        await deleteProduct(id); // Elimina el producto
-        await getProducts(); // Vuelve a cargar los productos
-        Swal.fire({
-          text: 'Producto eliminado correctamente.',
-          icon: 'success',
-          toast: true, // Esto hace que sea una alerta pequeña como un toast
-          position: 'bottom-end', // Posicionada en la parte inferior derecha
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Desaparece automáticamente después de 3 segundos
-          timerProgressBar: true, // Mostrar barra de progreso
-          width: '300px', // Ajustar el tamaño de la alerta
-        });
+    // Si el usuario confirma, result.isConfirmed será true
+    if (result.isConfirmed) {
+      await deleteProduct(id); // Elimina el producto
+      await getProducts(); // Vuelve a cargar los productos
+      Swal.fire({
+        text: 'Producto eliminado correctamente.',
+        icon: 'success',
+        toast: true, // Esto hace que sea una alerta pequeña como un toast
+        position: 'bottom-end', // Posicionada en la parte inferior derecha
+        showConfirmButton: false, // Sin botón de confirmación
+        timer: 3000, // Desaparece automáticamente después de 3 segundos
+        timerProgressBar: true, // Mostrar barra de progreso
+        width: '300px', // Ajustar el tamaño de la alerta
+      });
       }
     }
   };
@@ -287,6 +288,16 @@ const ProductosPages = () => {
               <label className='w-full text-2xl'>Descripción</label>
               <textarea placeholder='Descripción' className='p-2 mb-2 rounded-lg min-h-20 w-full text-lg'  {...register("descripcion")} />
               {errors.descripcion && <span className="w-full pl-2 mb-2 text-xl text-red-600 rounded-lg">{"El descripcion es requerido"}</span>}
+
+              <label className='w-full text-2xl'>¿Destacar producto?</label>
+              <select 
+                {...register("featured")} 
+                className="p-2 mb-2 rounded-lg border border-gray-300"
+              >
+                <option value="false">No destacar</option>
+                <option value="true">Destacar</option>
+              </select>
+
               
               <button type='submit'  className='w-full text-white border-separate bg-blue-600 rounded-md p-2 pr-4 pl-4 font-bold mt-2'>Actualizar</button>
             </form>

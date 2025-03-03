@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useProductContext } from "../context/ProductContext"; 
 import { CiCircleMinus, CiCirclePlus  } from "react-icons/ci";
-
 import ConsultaEnvio from "./ConsultaEnvio";
 
 import img from "../assets/img/img-mate-7.jpg"
@@ -13,6 +12,7 @@ import imgOCA from "../assets/img/logo-oca-ok.png"
 import imgAndreani from "../assets/img/logo-andreani.png"
 
 const images = [img1, img2, img3, img2]
+
 
 const ProductoDetalle = () => {
   const { id } = useParams();
@@ -50,11 +50,10 @@ const ProductoDetalle = () => {
         }
     };
 
-
   return (
     !producto ? (
         <div className="flex justify-center items-center min-h-screen text-2xl">
-            <span class="loader"> Cargando...</span>
+            <span className="loader"> Cargando...</span>
         </div>
     ) : (
     <div className="px-10 py-24 bg-background min-h-screen w-full text-2xl font-sans text-black flex justify-center">
@@ -117,8 +116,10 @@ const ProductoDetalle = () => {
                     </select>
                 </div>
             </div>
+            <div className="flex justify-start items-center w-full h-auto mt-10">
+                <p className="font-sans text-textMuted font-semibold text-xl mr-8">Stock disponible: <span className="text-black">10</span></p>
+            </div>
 
-            <p className="font-sans text-black text-xl mt-10">Stock disponible: 10</p>
             <div className="flex justify-start gap-5 mt-4">
                 <div className="h-12 w-32 p-3 font-semibold font-heading text-black text-xl border border-textMuted rounded-2xl flex items-center justify-between">
                     <button onClick={() => handleStockMinus()} className="border border-text rounded-full p-1 w-7 h-7 flex items-center justify-center hover:bg-gray-200 bg-gray-300">-</button>
