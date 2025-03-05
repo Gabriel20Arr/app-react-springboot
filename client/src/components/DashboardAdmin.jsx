@@ -1,6 +1,10 @@
 import React from "react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
 
+import ProductosPagesDash from "./ProductosPagesDash";
+import { TablaDinamica } from "./TablaDinamicaDash/TablaDinamica";
+
+
 const DashboardAdmin = () => {
   const salesData = [
     { month: "Ene", sales: 400 },
@@ -70,6 +74,8 @@ const DashboardAdmin = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      <ProductosPagesDash />
     </div>
   );
 };

@@ -14,7 +14,7 @@ import img from "../assets/img/img-mate-7.jpg"
 import { Link } from 'react-router-dom';
 
 const ProductosPages = () => {
-  const { product, getProducts, deleteProduct, actualizarProduct, getProduct, errorPut, setErrorPut } = useProductContext();
+  const { product, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
   const [openCreate, setOpenCreate] = useState(false); // Modal para el form de creación
   const [openDetalle, setOpenDetalle] = useState(false); // Modal para ver detalles
   const [selectedProduct, setSelectedProduct] = useState(null); // Estado para producto seleccionado para editar
@@ -120,7 +120,6 @@ const ProductosPages = () => {
       }
     }
   };
-  
 
   
   const onSubmit = handleSubmit(async (values) => {
