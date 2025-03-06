@@ -82,8 +82,11 @@ public class ProductoController {
                 productoDto.getPrecio(),
                 productoDto.getPeso(),
                 productoDto.getAltura(),
+                productoDto.getAncho(),
+                productoDto.getStock(),
                 productoDto.getDescripcion(),
                 productoDto.getFeatured(),
+                productoDto.getCategoria(),
                 usuario
             );
             productoService.create(producto);
@@ -119,9 +122,13 @@ public class ProductoController {
         producto.setPrecio(productoDto.getPrecio());
         producto.setPeso(productoDto.getPeso());
         producto.setAltura(productoDto.getAltura());
+        producto.setAncho(productoDto.getAncho());
+        producto.setStock(productoDto.getStock());
         producto.setDescripcion(productoDto.getDescripcion());
         producto.setFeatured(productoDto.getFeatured());
+        producto.setCategoria(productoDto.getCategoria());
         productoService.create(producto);
+        
         
         return new ResponseEntity<Mensaje>(new Mensaje("Producto actulizado correctamente"), HttpStatus.OK);
     }

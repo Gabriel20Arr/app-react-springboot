@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useProductContext } from '../context/ProductContext';
 import { useForm } from "react-hook-form";
-import edit from '../assets/img/editar.png';
-import eliminar from '../assets/img/eliminar.png';
-import add from '../assets/img/agregar.png';
 import { FormCreatePage } from './FormCreatePage';
 
 import Swal from 'sweetalert2/dist/sweetalert2.js'
@@ -24,6 +21,18 @@ const ProductosPages = () => {
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
   const { register, handleSubmit, formState: {errors}, reset  } = useForm();
+
+  // Paginacion
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 20; // Cambia según la cantidad deseada
+
+  // Calcular el índice de los productos actuales
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+
+  // Función para cambiar de página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   
   useEffect(() => {
     async function getP() {
@@ -103,20 +112,20 @@ const ProductosPages = () => {
         cancelButtonText: 'Cancelar'
       });
   
-    // Si el usuario confirma, result.isConfirmed será true
-    if (result.isConfirmed) {
-      await deleteProduct(id); // Elimina el producto
-      await getProducts(); // Vuelve a cargar los productos
-      Swal.fire({
-        text: 'Producto eliminado correctamente.',
-        icon: 'success',
-        toast: true, // Esto hace que sea una alerta pequeña como un toast
-        position: 'bottom-end', // Posicionada en la parte inferior derecha
-        showConfirmButton: false, // Sin botón de confirmación
-        timer: 3000, // Desaparece automáticamente después de 3 segundos
-        timerProgressBar: true, // Mostrar barra de progreso
-        width: '300px', // Ajustar el tamaño de la alerta
-      });
+      // Si el usuario confirma, result.isConfirmed será true
+      if (result.isConfirmed) {
+        await deleteProduct(id); // Elimina el producto
+        await getProducts(); // Vuelve a cargar los productos
+        Swal.fire({
+          text: 'Producto eliminado correctamente.',
+          icon: 'success',
+          toast: true, // Esto hace que sea una alerta pequeña como un toast
+          position: 'bottom-end', // Posicionada en la parte inferior derecha
+          showConfirmButton: false, // Sin botón de confirmación
+          timer: 3000, // Desaparece automáticamente después de 3 segundos
+          timerProgressBar: true, // Mostrar barra de progreso
+          width: '300px', // Ajustar el tamaño de la alerta
+        });
       }
     }
   };
@@ -150,29 +159,9 @@ const ProductosPages = () => {
     }
   });
   
-  // const handleDetalle = async (id) => {
-  //   try {
-  //     const res = await getProduct(id);  // Obtenemos los detalles completos del producto
-  //     if (res) {
-  //       setProductDetalle(res);
-  //       setOpenDetalle(true);
-  //     } else {
-  //       console.error("El producto no se encontró.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al obtener el producto:", error);
-  //   }
-  // };
 
   return (
     <div className="w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-12 bg-white">
-      <div className="w-full flex items-center justify-between text-black ">
-        <h1 className="font-bold mb-4 text-2xl">Algunos Productos</h1>
-        <button onClick={openCreateModal} className='flex items-center justify-center hover:scale-110'>
-          <img className='h-8 w-8' src={add} alt="add" />
-        </button>
-      </div>
-
       <div className="w-full flex items-center justify-start mb-4">
       <TbFilterCode size={"1.5rem"} />
       <select onChange={(e) => setCategory(e.target.value)} className="bg-white p-2 mr-10 w-fit">
@@ -181,6 +170,7 @@ const ProductosPages = () => {
         <option value="">Termos</option>
         <option value="">Yerbas</option>
         <option value="">Bombillas</option>
+        <option value="">Canasta Matera</option>
         {/*
         {[...new Set(product.map(p => p.categoria))].map(cat => (
           <option key={cat} value={cat}>{cat}</option>
@@ -200,31 +190,44 @@ const ProductosPages = () => {
 
       {/* MOSTRAMOS PRODUCTOS */}
       <div className="flex flex-wrap justify-start gap-4 w-full text-xl">
-      {filteredProducts.length > 0 ? (
-        filteredProducts.map((item) => (
-            <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] transition-all hover:scale-105 hover:shadow-lg">
-              <div className='w-full flex items-center justify-end space-x-4 p-3'>
-                <button onClick={() => handleEditProduct(item)} className='flex items-center justify-center  hover:scale-110'>
-                  <img className='h-6 w-6' src={edit} alt="editar" />
-                </button>
-                <button onClick={() => handleDeleteProduct(item.id, item.nombre)} className='flex items-center justify-center hover:scale-110' disabled={false}>
-                  <img className='h-6 w-6' src={eliminar} alt="eliminar" />
-                </button>
-              </div>
-              
+      {currentProducts.length > 0 ? (
+        currentProducts.map((item) => (
+            <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] hover:shadow-2xl">
               <div onClick={() => handleDetalle(item.id)} className='flex flex-col justify-center h-fit w-full'>
-              <Link to={`/producto-detalle/${item.id}`}>
-                <img src={img} className='h-auto w-58 mb-1'/>
-                <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
-                <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
-                <span className='text-price  text-lg'>${item.precio}</span>
-              </Link>
+                <Link to={`/producto-detalle/${item.id}`}>
+                  <img src={img} className='h-auto w-58 my-4 border rounded-md'/>
+                  <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
+                  <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
+                  <div className='flex justify-between mb-2'>
+                    <span className='text-price  text-lg'>${item.precio}</span>
+                    <span className='text-black  text-lg'>Stock: {item.stock}</span>
+                  </div>
+                </Link>
+                <button 
+                  className='border rounded-md font-heading text-lg w-full bg-green-500 hover:scale-105'
+                  onClick={() => {alert(item.nombre)}}
+                >
+                  Agregar al carrito
+                </button>
               </div>
             </div>
           ))
         ) : (
           <p>No hay productos disponibles.</p>
         )}
+      </div>
+
+      {/* Paginación */}
+      <div className="flex justify-center mt-4 space-x-2">
+        {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
+          <button 
+            key={index} 
+            onClick={() => paginate(index + 1)}
+            className={`px-3 py-1 rounded-md border ${currentPage === index + 1 ? 'bg-black text-white' : 'bg-white text-black'}`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
 
 

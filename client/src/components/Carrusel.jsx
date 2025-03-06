@@ -27,7 +27,7 @@ const Carrusel = () => {
   };
 
   return (
-    <div className="relative w-full h-[280px] mx-auto overflow-hidden shadow-lg mt-[50px] bg-red-700 z-0">
+    <div className="relative w-full h-[280px] mx-auto overflow-hidden shadow-lg mt-[50px] z-0">
       {/* Slides */}
       <div
         className="flex transition-transform duration-500"

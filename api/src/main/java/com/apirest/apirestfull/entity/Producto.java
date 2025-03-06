@@ -1,6 +1,7 @@
 package com.apirest.apirestfull.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.apirest.apirestfull.security.entity.Usuario;
 
@@ -33,9 +34,12 @@ public class Producto implements Serializable{
     private float precio;
     private Float peso;
     private Float altura;
+    private Float ancho;
+    private Float stock;
     private String descripcion;
     private boolean featured;
-    
+    private String categoria;
+
     // @OneToOne(cascade = CascadeType.ALL)
     // @JoinColumn(name = "image_id", referencedColumnName = "id")
     // private Image image;
