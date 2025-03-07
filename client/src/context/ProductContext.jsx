@@ -20,7 +20,7 @@ export function ProductProvider({children}) {
     const [errorPost, setErrorPost] = useState(null)
 
     const createProduct = async (producto) => {
-        console.log("prod: ", producto);
+        // console.log("prod: ", producto);
         try {
             const res = await createProductRequest(producto);
             console.log(res);

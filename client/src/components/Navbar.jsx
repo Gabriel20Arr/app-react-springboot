@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthContext } from "../context/AuthContext"
+import { useSearchContext } from '../context/SearchContext';
 import Cookies from 'js-cookie';
 import { FiMenu, FiX } from "react-icons/fi";
 
@@ -9,6 +10,7 @@ import cart from "../assets/img/carrito-de-compras.png"
 
 const Navbar = () => {
   const { profile, user, setIsAuthtenticated } = useAuthContext()
+  const { searchTerm, setSearchTerm } = useSearchContext();
   const [menuOpen, setMenuOpen] = useState(false); // Menú móvil
   const [profileOpen, setProfileOpen] = useState(false); // Menú perfil
   
@@ -41,7 +43,13 @@ const Navbar = () => {
           {/* Buscador */}
           <div className="hidden md:flex items-center border border-gray-500 bg-white rounded-md px-4">
             <img src={lupa} alt="search" className="w-5 h-5"/>
-            <input type="search" placeholder="Buscar productos.." className="text-sm text-black p-1 focus:outline-none"/>
+            <input 
+              type="search" 
+              placeholder="Buscar productos.." 
+              className="text-sm text-black p-1 focus:outline-none"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
 

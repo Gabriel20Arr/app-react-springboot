@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useProductContext } from '../context/ProductContext';
+import { useSearchContext } from '../context/SearchContext';
 import { useForm } from "react-hook-form";
 import edit from '../assets/img/editar.png';
 import eliminar from '../assets/img/eliminar.png';
@@ -16,10 +17,13 @@ const ProductosPagesDash = () => {
   const [openCreate, setOpenCreate] = useState(false); // Modal para el form de creación
   const [openEdit, setOpenEdit] = useState(false); // Modal para el form de creación
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
   const { register, handleSubmit, formState: { errors }, setValue  } = useForm();
+
+  const { searchTerm } = useSearchContext();
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 7; // Cambia según la cantidad deseada
@@ -32,6 +36,26 @@ const ProductosPagesDash = () => {
   // Función para cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+
+
+  useEffect(() => {
+    let productsFiltered = [...product];
+
+    // Filtrar por categoría o lo que ya tienes
+    if (category) {
+      productsFiltered = productsFiltered.filter(p => p.categoria === category);
+    }
+
+    // Filtrar por nombre basado en la búsqueda
+    if (searchTerm) {
+      productsFiltered = productsFiltered.filter(p =>
+        p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(productsFiltered);
+  }, [product, category, sortType, searchTerm]);
+  
 
   useEffect(() => {
     async function getP() {
@@ -202,8 +226,8 @@ const ProductosPagesDash = () => {
           </tr>
         </thead>
         <tbody>
-          {currentProducts.length > 0 ? (
-            currentProducts.map((item) => (
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((item) => (
               <tr key={item.id} className="border font-sans text-text text-lg">
                 <td className="p-1"><img src={imgTest} className='w-20 h-20' /></td>
                 <td className="border p-2">{item.nombre}</td>

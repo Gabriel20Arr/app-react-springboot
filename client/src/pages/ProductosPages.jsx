@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useProductContext } from '../context/ProductContext';
+import { useSearchContext } from '../context/SearchContext';
 import { useForm } from "react-hook-form";
 import { FormCreatePage } from './FormCreatePage';
 
@@ -7,7 +8,7 @@ import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import { TbFilterCode, TbFilterDollar } from "react-icons/tb";
 
-import img from "../assets/img/img-mate-7.jpg"
+import img from "../assets/img/img-mate-7.jpg";
 import { Link } from 'react-router-dom';
 
 const ProductosPages = () => {
@@ -17,11 +18,33 @@ const ProductosPages = () => {
   const [selectedProduct, setSelectedProduct] = useState(null); // Estado para producto seleccionado para editar
   const [openEdit, setOpenEdit] = useState(false); // Modal para el form de edición
   const [productDetalle, setProductDetalle] = useState(null); // Estado para detalles del producto
-  const [filteredProducts, setFilteredProducts] = useState([]);
+
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
   const { register, handleSubmit, formState: {errors}, reset  } = useForm();
 
+  const { searchTerm } = useSearchContext();
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  useEffect(() => {
+    let productsFiltered = [...product];
+
+    // Filtrar por categoría o lo que ya tienes
+    if (category) {
+      productsFiltered = productsFiltered.filter(p => p.categoria === category);
+    }
+
+    // Filtrar por nombre basado en la búsqueda
+    if (searchTerm) {
+      productsFiltered = productsFiltered.filter(p =>
+        p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(productsFiltered);
+  }, [product, category, sortType, searchTerm]);
+  
+  
   // Paginacion
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20; // Cambia según la cantidad deseada
@@ -69,14 +92,6 @@ const ProductosPages = () => {
     setFilteredProducts(productsFiltered);
   }, [product, category, sortType]);
   
-  // Abrir y cerrar el modal de creación
-  const openCreateModal = () => {
-    setOpenCreate(true);
-  };
-
-  const closeCreateModal = () => {
-    setOpenCreate(false);
-  };
 
   // Cuando cambia el selectedProduct se resetea el form
   useEffect(() => {
@@ -93,44 +108,6 @@ const ProductosPages = () => {
   }, [selectedProduct, reset]);
   
 
-  // Función para abrir el modal de actualización
-  const handleEditProduct = (item) => {
-    console.log("Item: ", item);
-    setSelectedProduct(item);
-    setOpenEdit(true); // Abre el modal de edición
-  };
-
-  
-  const handleDeleteProduct = async (id, nombre) => {
-    if (id) {
-      const result = await Swal.fire({
-        title: 'Eliminar producto',
-        text: `¿Estás seguro de eliminar el producto: ${nombre}?`,
-        icon: 'warning',
-        showCancelButton: true, // Mostrar botón de cancelar
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-      });
-  
-      // Si el usuario confirma, result.isConfirmed será true
-      if (result.isConfirmed) {
-        await deleteProduct(id); // Elimina el producto
-        await getProducts(); // Vuelve a cargar los productos
-        Swal.fire({
-          text: 'Producto eliminado correctamente.',
-          icon: 'success',
-          toast: true, // Esto hace que sea una alerta pequeña como un toast
-          position: 'bottom-end', // Posicionada en la parte inferior derecha
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Desaparece automáticamente después de 3 segundos
-          timerProgressBar: true, // Mostrar barra de progreso
-          width: '300px', // Ajustar el tamaño de la alerta
-        });
-      }
-    }
-  };
-
-  
   const onSubmit = handleSubmit(async (values) => {
     // Actualización de producto
     console.log(errors);
@@ -166,11 +143,11 @@ const ProductosPages = () => {
       <TbFilterCode size={"1.5rem"} />
       <select onChange={(e) => setCategory(e.target.value)} className="bg-white p-2 mr-10 w-fit">
         <option value="">Todas las categorías</option>
-        <option value="">Mates</option>
-        <option value="">Termos</option>
-        <option value="">Yerbas</option>
-        <option value="">Bombillas</option>
-        <option value="">Canasta Matera</option>
+        <option value="Mates">Mates</option>
+        <option value="Termos">Termos</option>
+        <option value="Yerbas">Yerbas</option>
+        <option value="Bombillas">Bombillas</option>
+        <option value="CanastaMatera">Canasta Matera</option>
         {/*
         {[...new Set(product.map(p => p.categoria))].map(cat => (
           <option key={cat} value={cat}>{cat}</option>
@@ -190,10 +167,10 @@ const ProductosPages = () => {
 
       {/* MOSTRAMOS PRODUCTOS */}
       <div className="flex flex-wrap justify-start gap-4 w-full text-xl">
-      {currentProducts.length > 0 ? (
-        currentProducts.map((item) => (
+      {filteredProducts.length > 0 ? (
+        filteredProducts.map((item) => (
             <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] hover:shadow-2xl">
-              <div onClick={() => handleDetalle(item.id)} className='flex flex-col justify-center h-fit w-full'>
+              <div className='flex flex-col justify-center h-fit w-full'>
                 <Link to={`/producto-detalle/${item.id}`}>
                   <img src={img} className='h-auto w-58 my-4 border rounded-md'/>
                   <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
