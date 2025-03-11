@@ -5,6 +5,7 @@ import com.apirest.apirestfull.security.enums.RolNombre;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +25,17 @@ public class NuevoUsuario {
     @NotBlank
     private String password;
 
-     private Set<RolNombre> roles;
+    @NotNull
+    private Number telefono;
+
+    @NotBlank
+    private String direccion;
+
+    @NotBlank
+    private String pais;
+
+    @NotBlank
+    private String provincia;
+
+    private Set<RolNombre> roles;
 }

@@ -1,24 +1,20 @@
 package com.apirest.apirestfull.security.controller;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import org.springframework.security.core.AuthenticationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,8 +38,10 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
-// @CrossOrigin(origins = "http://localhost:5173") 
 @RequestMapping("api/auth")
 public class AuthController {
 
@@ -112,26 +110,36 @@ public class AuthController {
         Usuario usuario = new Usuario(
                 nuevoUsuario.getNombre(),
                 nuevoUsuario.getNombreUsuario(),
+                nuevoUsuario.getTelefono(),
+                nuevoUsuario.getDireccion(),
+                nuevoUsuario.getPais(),
+                nuevoUsuario.getProvincia(),
                 nuevoUsuario.getEmail(),
                 passwordEncoder.encode(passwordEnTextoClaro) // Guardar encriptada en la base de datos
         );
 
-        // Asignar roles
+        // Asignar roles al usuario
         Set<Rol> roles = new HashSet<>();
         if (nuevoUsuario.getRoles().contains(RolNombre.ROLE_ADMIN)) {
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Rol no encontrado")));
+            roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
+            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
         } else {
-            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).orElseThrow(() -> new RuntimeException("Rol no encontrado")));
+            roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
         }
-
         usuario.setRoles(roles);
+
+        // Guardar el usuario en la base de datos
         usuarioService.save(usuario);
 
-        // Crear un objeto de respuesta con la contraseña en texto claro
+        // Crear respuesta con los datos del usuario
         Map<String, Object> response = new HashMap<>();
         response.put("id", usuario.getId());
         response.put("nombre", usuario.getNombre());
         response.put("nombreUsuario", usuario.getNombreUsuario());
+        response.put("telefono", usuario.getTelefono());
+        response.put("direccion", usuario.getDireccion());
+        response.put("pais", usuario.getPais());
+        response.put("provincia", usuario.getProvincia());
         response.put("email", usuario.getEmail());
         response.put("roles", usuario.getRoles());
         response.put("password", passwordEnTextoClaro);  // Devolver la contraseña en texto claro

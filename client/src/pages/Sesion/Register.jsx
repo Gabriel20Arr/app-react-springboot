@@ -45,7 +45,7 @@ const Register = () => {
             <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-xl shadow-xl overflow-hidden">
                 {/* Sección Izquierda: Información */}
                 <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-10 bg-green-700 text-white text-center">
-                    <h2 className="text-4xl font-bold mb-6">Únete a MateClub</h2>
+                    <h2 className="text-4xl font-bold mb-6">Únete a Tu Mate</h2>
                     <p className="text-lg mb-8">
                         Aprende sobre la cultura del mate, comparte experiencias y encuentra los mejores productos.
                     </p>
@@ -79,6 +79,31 @@ const Register = () => {
                             className='w-full text-black text-lg rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
                         />
                         {errors.email && <span className='text-red-600 font-semibold'>El Email es requerido</span>}
+
+                        <input type='tel' placeholder='Telefono' {...register("telefono", { required: true })}
+                            className='w-full text-black text-lg rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
+                        />
+                        {errors.telefono && <span className='text-red-600 font-semibold'>El Telefono es requerido</span>}
+
+                        <input type='text' placeholder='Dirección' {...register("direccion", { required: true })}
+                            className='w-full text-black text-lg rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
+                        />
+                        {errors.direccion && <span className='text-red-600 font-semibold'>La Dirección es requerida</span>}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <input type='text' placeholder='País' {...register("pais", { required: true })}
+                                    className='w-full text-black text-lg rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
+                                />
+                                {errors.pais && <span className='text-red-600 font-semibold'>El País es requerido</span>}
+                            </div>
+                            <div>
+                                <input type='text' placeholder='Provincia' {...register("provincia", { required: true })}
+                                    className='w-full text-black text-lg rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'
+                                />
+                                {errors.provincia && <span className='text-red-600 font-semibold'>La Provincia es requerida</span>}
+                            </div>
+                        </div>
 
                         <input type='password' placeholder='Contraseña' {...register("password", { required: true })}
                             className='w-full text-black text-lg rounded-lg p-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500'

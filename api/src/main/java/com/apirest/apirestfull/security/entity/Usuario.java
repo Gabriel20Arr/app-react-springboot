@@ -5,6 +5,7 @@ import java.util.Set;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -15,16 +16,21 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull
     @NotEmpty
     private String nombre;
 
+    @NotNull
     @NotEmpty
     @Column(unique = true)
     private String nombreUsuario;
 
+    @NotNull
     @NotEmpty
+    @Column(unique = true)
     private String email;
 
+    @NotNull
     @NotEmpty
     private String password;
 
@@ -34,15 +40,29 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "rol_id"))
     private Set<Rol> roles = new HashSet<>();
 
+    @NotNull
+    private Number telefono;    
+    @NotNull
+    private String direccion;
+
+    @NotNull
+    private String pais;
+
+    @NotNull
+    private String provincia;
 
     public Usuario() {
     }
 
-    public Usuario(@NotEmpty String nombre, @NotEmpty String nombreUsuario, @NotEmpty String email,
-            @NotEmpty String password) {
+    public Usuario(@NotEmpty String nombre, @NotEmpty String nombreUsuario, Number telefono, String direccion, @NotEmpty String email,
+            @NotEmpty String password, String pais, String provincia) {
         this.nombre = nombre;
         this.nombreUsuario = nombreUsuario;
+        this.telefono = telefono;
+        this.direccion = direccion;
         this.email = email;
         this.password = password;
+        this.pais = pais;
+        this.provincia = provincia;
     }
 }

@@ -72,15 +72,21 @@ const Navbar = () => {
 
             {/* Menú desplegable del perfil */}
             {profileOpen && (
-              <div className="absolute top-0 left-0 mt-3 bg-white rounded-md shadow-lg z-[999]">
-                <ul className="py-1">
+              <div className="absolute top-0 left-0 mt-[55px] bg-white rounded-md shadow-lg z-[999] w-[130px] border">
+                <ul className="">
+                  <li className='w-full px-2 text-right'>
+                    <button 
+                      className="bg-red-500 w-5 h-5 text-xs rounded-full"
+                      onClick={() => setProfileOpen(false)}
+                    >X</button>
+                  </li>
                   <li>
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
                       Perfil
                     </Link>
                   </li>
                   <li>
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
                       Cerrar sesión
                     </button>
                   </li>

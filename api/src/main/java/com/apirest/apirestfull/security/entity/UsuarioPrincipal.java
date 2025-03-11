@@ -13,23 +13,27 @@ public class UsuarioPrincipal implements UserDetails{
     private String nombreUsuario;
     private String email;
     private String password;
+    private Number telefono;
+    private String direccion;
     private Collection<? extends GrantedAuthority> authorities;
 
 
-    public UsuarioPrincipal(String nombre, String nombreUsuario, String email, String password,
+    public UsuarioPrincipal(String nombre, String nombreUsuario, String email, String password, Number telefono, String direccion,
             Collection<? extends GrantedAuthority> authorities) {
         this.nombre = nombre;
         this.nombreUsuario = nombreUsuario;
         this.email = email;
         this.password = password;
+        this.telefono = telefono;
+        this.direccion = direccion;
         this.authorities = authorities;
     }
 
     public static UsuarioPrincipal build(Usuario usuario){
         List<GrantedAuthority> authorities = 
             usuario.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol.getRolNombre().name())).collect(Collectors.toList());
-        return new UsuarioPrincipal(usuario.getNombre(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getPassword(), authorities);
-    }
+        return new UsuarioPrincipal(usuario.getNombre(), usuario.getNombreUsuario(), usuario.getEmail(), usuario.getPassword(), usuario.getTelefono(), usuario.getDireccion(), authorities);
+    }   
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -70,6 +74,14 @@ public class UsuarioPrincipal implements UserDetails{
 
     public String getEmail() {
         return email;
+    }
+
+    public Number getTelefono() {
+        return telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
     }
 
 }
