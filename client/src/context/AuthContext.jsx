@@ -30,7 +30,9 @@ export const AuthProvider = ({children}) => {
                 roles: [user.roles]
             }
             const res = await registerRequest(formattedValue)
+            console.log(res.data);
             setUser(res.data)
+            
             setErrorR(null)
         } catch  (error) {
             setErrorR(error.response)

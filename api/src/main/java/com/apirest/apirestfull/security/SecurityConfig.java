@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,63 +41,56 @@ public class SecurityConfig {
         return new JwTokenFilter();
     }
 
-    // Encriptación de contraseñas
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Configuración del AuthenticationManager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // Configuración de las reglas de seguridad HTTP
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors // Habilita CORS
+            .cors(cors -> cors
                 .configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfig.setAllowedOrigins(List.of("http://localhost:5173")); // Permite el origen del frontend
+                    corsConfig.setAllowedOrigins(List.of("http://localhost:5173"));
                     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(List.of("*"));
-                    corsConfig.setAllowCredentials(true); // Si estás usando cookies o autenticación basada en JWT
+                    corsConfig.setAllowCredentials(true);
                     return corsConfig;
                 })
             )
-            .csrf(csrf -> csrf.disable()) // Deshabilita CSRF por simplicidad
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("api/auth/**", "/error").permitAll() // Rutas permitidas sin autenticación
-                .requestMatchers(HttpMethod.POST, "api/productos").hasRole("ADMIN") // Solo los ADMIN pueden crear productos
-                .requestMatchers("api/productos/**").authenticated() // Las demás acciones sobre productos requieren autenticación
-                .anyRequest().authenticated() // Cualquier otra solicitud requiere autenticación
+                .requestMatchers("api/auth/**", "/error").permitAll()
+                .requestMatchers(HttpMethod.GET, "api/productos", "api/productos/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "api/productos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "api/productos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "api/productos/**").hasRole("ADMIN")
+                .requestMatchers("api/productos/mis-productos").authenticated()
+                .anyRequest().authenticated()
             )
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(jwtEntryPoint) // Manejo de errores
+                .authenticationEntryPoint(jwtEntryPoint)
             )
             .sessionManagement(sess -> sess
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Sin sesiones en el servidor
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );
 
-        // Agrega el filtro de JWT antes del filtro de autenticación por defecto
         http.addFilterBefore(jwTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Configuración global de CORS
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                // registry.addMapping("/**") // Habilita CORS para todas las rutas
-                //         .allowedOrigins("http://localhost:5173") // Permite el dominio del frontend
-                //         .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos permitidos
-                //         .allowedHeaders("*") // Headers permitidos
-                //         .allowCredentials(true); // Permitir credenciales (si estás usando JWT o cookies)
             }
         };
     }

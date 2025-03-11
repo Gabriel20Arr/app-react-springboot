@@ -9,7 +9,7 @@ import lupa from "../assets/img/header/lupa-de-busqueda.png"
 import cart from "../assets/img/carrito-de-compras.png"
 
 const Navbar = () => {
-  const { profile, user, setIsAuthtenticated } = useAuthContext()
+  const { profile, user, isAuthtenticated, setIsAuthtenticated } = useAuthContext()
   const { searchTerm, setSearchTerm } = useSearchContext();
   const [menuOpen, setMenuOpen] = useState(false); // Menú móvil
   const [profileOpen, setProfileOpen] = useState(false); // Menú perfil
@@ -31,13 +31,15 @@ const Navbar = () => {
     <nav className="w-full font-heading">
       <div className="w-full">
         {/* Primer navbar */}
-        <div className="w-full h-12 flex justify-between bg-green-600 font-bold py-2 px-5 border-b border-gray-300 fixed z-20">
+        <div className="w-full h-12 flex justify-between bg-green-600 font-bold py-2 px-5 border-b border-gray-300 fixed z-[998]">
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-white hover:text-gray-300">Inicio</Link>
             <Link to="/productos" className="text-white hover:text-gray-300">Productos</Link>
             <Link to="/aboutMe" className="text-white hover:text-gray-300">Sobre Nosotros</Link>
             <Link to="/contact" className="text-white hover:text-gray-300">Contacto</Link>
-            <Link to="/dash-admin" className="text-white hover:text-gray-300">Dashboard</Link>
+            {isAuthtenticated && user?.roles?.[0]?.id === 1 && (
+              <Link to="/dash-admin" className="text-white hover:text-gray-300">Dashboard</Link>
+            )}
           </div>
 
           {/* Buscador */}
@@ -54,7 +56,7 @@ const Navbar = () => {
         </div>
 
         {/* Segundo navbar */}
-        <div className="w-full flex justify-between items-center bg-green-600 font-bold py-3 px-5 relative top-12 z-10">
+        <div className="w-full flex justify-between items-center bg-green-600 font-bold py-3 px-5 relative top-12 z-[997]">
           {/* Imagen de perfil */}
           <div className="relative">
             <button 
@@ -70,7 +72,7 @@ const Navbar = () => {
 
             {/* Menú desplegable del perfil */}
             {profileOpen && (
-              <div className="absolute top-0 left-0 mt-3 bg-white rounded-md shadow-lg z-0">
+              <div className="absolute top-0 left-0 mt-3 bg-white rounded-md shadow-lg z-[999]">
                 <ul className="py-1">
                   <li>
                     <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -102,7 +104,7 @@ const Navbar = () => {
 
 
       {/* Ícono de menú (Solo en móviles) */}
-      <div className="md:hidden w-full h-12 flex justify-between bg-blue-500 font-bold py-2 px-5 border-b border-gray-300 fixed top-0 z-30">
+      <div className="md:hidden w-full h-12 flex justify-between bg-green-600 text-white font-bold py-2 px-5 border-b border-gray-300 fixed top-0 z-[999]">
         <button onClick={() => setMenuOpen(!menuOpen)} className="text-black">
           {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
         </button>
@@ -116,11 +118,14 @@ const Navbar = () => {
 
       {/* Menú móvil */}
       {menuOpen && (
-        <div className={`md:hidden bg-blue-300 w-full fixed top-12 left-0 flex flex-col items-center py-4 space-y-4 transition-all duration-300 pt-5 z-[1] ${menuOpen ? 'opacity-100' : 'opacity-0 invisible'}`}>
+        <div className={`md:hidden bg-green-300 w-full fixed top-12 left-0 flex flex-col items-center py-4 space-y-4 transition-all duration-300 pt-5 z-[999] ${menuOpen ? 'opacity-100' : 'opacity-0 invisible'}`}>
           <Link to="/" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Inicio</Link>
           <Link to="/productos" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Productos</Link>
-          <Link to="/about" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Sobre Nosotros</Link>
+          <Link to="/aboutMe" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Sobre Nosotros</Link>
           <Link to="/contact" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Contacto</Link>
+          {isAuthtenticated && user?.roles?.[0]?.id === 1 && (
+            <Link to="/dash-admin" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+          )}
         </div>
       )}
 

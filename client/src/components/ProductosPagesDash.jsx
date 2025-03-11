@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useProductContext } from '../context/ProductContext';
 import { useSearchContext } from '../context/SearchContext';
+import { useAuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import edit from '../assets/img/editar.png';
 import eliminar from '../assets/img/eliminar.png';
@@ -13,63 +15,54 @@ import imgTest from "../assets/img/imgP-Dest/test-1-yerba.webp"
 import { FormCreatePage } from "../pages/FormCreatePage"
 
 const ProductosPagesDash = () => {
-  const { product, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
-  const [openCreate, setOpenCreate] = useState(false); // Modal para el form de creación
-  const [openEdit, setOpenEdit] = useState(false); // Modal para el form de creación
+  const { products, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
+  const { user, isAuthtenticated } = useAuthContext();
+  const navigate = useNavigate();
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
-  const { register, handleSubmit, formState: { errors }, setValue  } = useForm();
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm();
 
   const { searchTerm } = useSearchContext();
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 7; // Cambia según la cantidad deseada
-
-  // Calcular el índice de los productos actuales
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-
-  // Función para cambiar de página
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-
-
+  const productsPerPage = 7;
+  
+  // Verificar si el usuario es admin
   useEffect(() => {
-    let productsFiltered = [...product];
+    if (!isAuthtenticated || !user?.roles?.[0] || user.roles[0].id === 2) {
+      navigate('/');
+    }
+  }, [isAuthtenticated, user, navigate]);
 
-    // Filtrar por categoría o lo que ya tienes
+  // Cargar productos al montar el componente
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  // Filtrar y ordenar productos cuando cambian los filtros o productos
+  useEffect(() => {
+    if (!products) return;
+    
+    let productsFiltered = [...products];
+
+    // Filtrar por categoría
     if (category) {
       productsFiltered = productsFiltered.filter(p => p.categoria === category);
     }
 
-    // Filtrar por nombre basado en la búsqueda
+    // Filtrar por búsqueda
     if (searchTerm) {
       productsFiltered = productsFiltered.filter(p =>
         p.nombre.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    setFilteredProducts(productsFiltered);
-  }, [product, category, sortType, searchTerm]);
-  
-
-  useEffect(() => {
-    async function getP() {
-      const dat=  await getProducts();
-    }
-    getP();
-  }, []);
-
-  
-  useEffect(() => {
-    let productsFiltered = [...product];
-    if (category) {
-      productsFiltered = productsFiltered.filter(p => p.categoria === category);
-    }
+    // Ordenar productos
     switch (sortType) {
       case 'priceAsc':
         productsFiltered.sort((a, b) => a.precio - b.precio);
@@ -86,110 +79,117 @@ const ProductosPagesDash = () => {
       default:
         break;
     }
+
     setFilteredProducts(productsFiltered);
-  }, [product, category, sortType]);
+    // Reset a la primera página cuando cambian los filtros
+    setCurrentPage(1);
+  }, [products, category, sortType, searchTerm]);
 
+  // Calcular productos para la página actual
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const pageCount = Math.ceil(filteredProducts.length / productsPerPage);
 
-    // Abrir y cerrar el modal de creación
-    const openCreateModal = () => {
-      setOpenCreate(true);
-    };
-  
-    const closeCreateModal = () => {
-      setOpenCreate(false);
-    };
-  
-    // Cuando cambia el selectedProduct se resetea el form
-    useEffect(() => {
-      if (selectedProduct) {
-          setValue("nombre", selectedProduct.nombre);
-          setValue("precio", selectedProduct.precio);
-          setValue("peso", selectedProduct.peso);
-          setValue("altura", selectedProduct.altura);
-          setValue("ancho", selectedProduct.ancho);
-          setValue("stock", selectedProduct.stock);
-          setValue("descripcion", selectedProduct.descripcion);
-          setValue("categoria", selectedProduct.categoria);
-          setValue("featured", selectedProduct.featured ? "true" : "false");
-      }
-    }, [selectedProduct, setValue ]);
-    
-  
-    // Función para abrir el modal de actualización
-    const handleEditProduct = (item) => {
-      console.log("Item: ", item);
-      setSelectedProduct(item);
-      setOpenEdit(true); // Abre el modal de edición
-    };
-  
+  // Paginación
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= pageCount) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
-    const handleDeleteProduct = async (id, nombre) => {
-      if (id) {
-        const result = await Swal.fire({
-          title: 'Eliminar producto',
-          text: `¿Estás seguro de eliminar el producto: ${nombre}?`,
-          icon: 'warning',
-          showCancelButton: true, // Mostrar botón de cancelar
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
-        });
-    
-      // Si el usuario confirma, result.isConfirmed será true
+  // Gestión de modales
+  const openCreateModal = () => setOpenCreate(true);
+  const closeCreateModal = () => setOpenCreate(false);
+  
+  // Actualizar formulario cuando se selecciona un producto
+  useEffect(() => {
+    if (selectedProduct) {
+      setValue("nombre", selectedProduct.nombre);
+      setValue("precio", selectedProduct.precio);
+      setValue("peso", selectedProduct.peso);
+      setValue("altura", selectedProduct.altura);
+      setValue("ancho", selectedProduct.ancho);
+      setValue("stock", selectedProduct.stock);
+      setValue("descripcion", selectedProduct.descripcion);
+      setValue("categoria", selectedProduct.categoria);
+      setValue("featured", selectedProduct.featured ? "true" : "false");
+    }
+  }, [selectedProduct, setValue]);
+
+  const handleEditProduct = (item) => {
+    setSelectedProduct(item);
+    setOpenEdit(true);
+  };
+
+  const handleDeleteProduct = async (id, nombre) => {
+    if (id) {
+      const result = await Swal.fire({
+        title: 'Eliminar producto',
+        text: `¿Estás seguro de eliminar el producto: ${nombre}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+      });
+  
       if (result.isConfirmed) {
-        await deleteProduct(id); // Elimina el producto
-        await getProducts(); // Vuelve a cargar los productos
+        await deleteProduct(id);
+        await getProducts();
         Swal.fire({
           text: 'Producto eliminado correctamente.',
           icon: 'success',
-          toast: true, // Esto hace que sea una alerta pequeña como un toast
-          position: 'bottom-end', // Posicionada en la parte inferior derecha
-          showConfirmButton: false, // Sin botón de confirmación
-          timer: 3000, // Desaparece automáticamente después de 3 segundos
-          timerProgressBar: true, // Mostrar barra de progreso
-          width: '300px', // Ajustar el tamaño de la alerta
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          width: '300px',
         });
-        }
       }
-    };
+    }
+  };
 
-    const onSubmit = handleSubmit(async (values) => {
-      // Actualización de producto
-      console.log(errors);
-      
-      try {
-        if (selectedProduct) {
-          await actualizarProduct({...values, id: selectedProduct.id });
-          setSelectedProduct(null);  // Limpiar el producto seleccionado (cierra el modal)
-          setOpenEdit(false); // Cerrar el modal de edición
-          await getProducts();  // Refrescar la lista de productos
-          Swal.fire({
-            text: 'Producto actulizado correctamente.',
-            icon: 'success',
-            toast: true, // Esto hace que sea una alerta pequeña como un toast
-            position: 'bottom-end', // Posicionada en la parte inferior derecha
-            showConfirmButton: false, // Sin botón de confirmación
-            timer: 3000, // Desaparece automáticamente después de 3 segundos
-            timerProgressBar: true, // Mostrar barra de progreso
-            width: '300px', // Ajustar el tamaño de la alerta
-          });
-        }
-      } catch (error) {
-        // Aquí ya se maneja el error en actualizarProduct
-        setErrorPut(error)
-        console.log("Error al actualizar producto: ", error);
+  const onSubmit = handleSubmit(async (values) => {
+    try {
+      if (selectedProduct) {
+        await actualizarProduct({...values, id: selectedProduct.id });
+        setSelectedProduct(null);
+        setOpenEdit(false);
+        await getProducts();
+        Swal.fire({
+          text: 'Producto actualizado correctamente.',
+          icon: 'success',
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          width: '300px',
+        });
       }
-    });
-  
+    } catch (error) {
+      setErrorPut(error);
+      console.error("Error al actualizar producto:", error);
+    }
+  });
+
+  // Si el usuario no está autenticado o no es admin, no renderizar nada
+  if (!isAuthtenticated || !user?.roles?.[0] || user.roles[0].id === 2) {
+    return null;
+  }
 
   return (
     <div className="max-w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-12 bg-white overflow-hidden">
       <div className="w-full flex items-center justify-between text-black">
         <h1 className="font-bold mb-4 text-2xl">Productos</h1>
-        <button onClick={openCreateModal} className='hover:scale-110'><img className='h-8 w-8' src={add} alt="add" /></button>
+        <button onClick={openCreateModal} className='hover:scale-110'>
+          <img className='h-8 w-8' src={add} alt="add" />
+        </button>
       </div>
 
       <div className="w-full flex items-center justify-start mb-4">
-        <TbFilterCode size="1.5rem" />
+        <TbFilterCode size={"1.5rem"} />
         <select onChange={(e) => setCategory(e.target.value)} className="bg-white p-2 mr-10 w-fit">
           <option value="">Todas las categorías</option>
           <option value="Mates">Mates</option>
@@ -199,7 +199,7 @@ const ProductosPagesDash = () => {
           <option value="CanastaMatera">Canasta Matera</option>
         </select>
         
-        <TbFilterDollar size="1.5rem" />
+        <TbFilterDollar size={"1.5rem"} />
         <select onChange={(e) => setSortType(e.target.value)} className="bg-white p-2">
           <option value="">Ordenar por</option>
           <option value="priceAsc">Menor a Mayor</option>
@@ -210,80 +210,104 @@ const ProductosPagesDash = () => {
       </div>
 
       <div className="w-full overflow-x-auto">
-      <table className="min-w-full text-left border-collapse bg-gray-100">
-        <thead>
-          <tr>
-            <th className="border p-2">Imagen</th>
-            <th className="border p-2">Nombre</th>
-            <th className="border p-2">Descripción</th>
-            <th className="border p-2">Precio</th>
-            <th className="border p-2">Altura</th>
-            <th className="border p-2">Ancho</th>
-            <th className="border p-2">Peso</th>
-            <th className="border p-2">Stock</th>
-            <th className="border p-2">Categoria</th>
-            <th className="border p-2">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((item) => (
-              <tr key={item.id} className="border font-sans text-text text-lg">
-                <td className="p-1"><img src={imgTest} className='w-20 h-20' /></td>
-                <td className="border p-2">{item.nombre}</td>
-                <td className="px-2 w-fit line-clamp-3">{item.descripcion}</td>
-                <td className="border p-2">${item.precio}</td>
-                <td className="border p-2">{item.altura}cm</td>
-                <td className="border p-2">{item.ancho}cm</td>
-                <td className="border p-2">{item.peso}g</td>
-                <td className="border p-2">{item.stock}</td>
-                <td className="border p-2">{item.categoria}</td>
-                <td className="p-2 flex flex-col items-center gap-5">
-                  <button onClick={() => handleEditProduct(item)}>
-                    <img className='h-6 w-6' src={edit} alt="editar" />
-                  </button>
-                  <button onClick={() => handleDeleteProduct(item.id, item.nombre)}>
-                    <img className='h-6 w-6' src={eliminar} alt="eliminar" />
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
+        <table className="min-w-full text-left border-collapse bg-gray-100">
+          <thead>
             <tr>
-              <td colSpan="10" className="text-center p-4">No hay productos disponibles.</td>
+              <th className="border p-2">Imagen</th>
+              <th className="border p-2">Nombre</th>
+              <th className="border p-2">Descripción</th>
+              <th className="border p-2">Precio</th>
+              <th className="border p-2">Altura</th>
+              <th className="border p-2">Ancho</th>
+              <th className="border p-2">Peso</th>
+              <th className="border p-2">Stock</th>
+              <th className="border p-2">Categoria</th>
+              <th className="border p-2">Acciones</th>
             </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-    
+          </thead>
+          <tbody>
+            {currentProducts.length > 0 ? (
+              currentProducts.map((item) => (
+                <tr key={item.id} className="border font-sans text-text text-lg">
+                  <td className="p-1"><img src={imgTest} className='w-20 h-20' alt={item.nombre} /></td>
+                  <td className="border p-2">{item.nombre}</td>
+                  <td className="px-2 w-fit line-clamp-3">{item.descripcion}</td>
+                  <td className="border p-2">${item.precio}</td>
+                  <td className="border p-2">{item.altura}cm</td>
+                  <td className="border p-2">{item.ancho}cm</td>
+                  <td className="border p-2">{item.peso}g</td>
+                  <td className="border p-2">{item.stock}</td>
+                  <td className="border p-2">{item.categoria}</td>
+                  <td className="p-2 flex flex-col items-center gap-5">
+                    <button onClick={() => handleEditProduct(item)}>
+                      <img className='h-6 w-6' src={edit} alt="editar" />
+                    </button>
+                    <button onClick={() => handleDeleteProduct(item.id, item.nombre)}>
+                      <img className='h-6 w-6' src={eliminar} alt="eliminar" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="10" className="text-center p-4">No hay productos disponibles.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {/* Paginación */}
-      <div className="flex justify-center mt-4 space-x-2">
-          {Array.from({ length: Math.ceil(filteredProducts.length / productsPerPage) }, (_, index) => (
-            <button 
-              key={index} 
+      {pageCount > 1 && (
+        <div className="flex justify-center mt-4 space-x-2">
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`px-3 py-1 rounded-md border ${
+              currentPage === 1 ? 'bg-gray-200 text-gray-500' : 'bg-white text-black hover:bg-gray-100'
+            }`}
+          >
+            Anterior
+          </button>
+          {Array.from({ length: pageCount }, (_, index) => (
+            <button
+              key={index}
               onClick={() => paginate(index + 1)}
-              className={`px-3 py-1 rounded-md border ${currentPage === index + 1 ? 'bg-black text-white' : 'bg-white text-black'}`}
+              className={`px-3 py-1 rounded-md border ${
+                currentPage === index + 1 ? 'bg-black text-white' : 'bg-white text-black hover:bg-gray-100'
+              }`}
             >
               {index + 1}
             </button>
           ))}
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === pageCount}
+            className={`px-3 py-1 rounded-md border ${
+              currentPage === pageCount ? 'bg-gray-200 text-gray-500' : 'bg-white text-black hover:bg-gray-100'
+            }`}
+          >
+            Siguiente
+          </button>
         </div>
+      )}
 
+      {/* Modal de creación */}
+      {openCreate && (
+        <FormCreatePage onClose={closeCreateModal} />
+      )}
 
-      {/* FORMULARIO DE ACTUALIZACIÓN */}
+      {/* Modal de edición */}
       {openEdit && selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50"> 
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50">
           <div className="w-[750px] bg-white p-6 rounded-2xl shadow-lg">
             <form onSubmit={onSubmit} className="flex flex-col gap-3">
-
               {/* Header con título y botón de cerrar */}
               <div className="flex items-center justify-between p-4 bg-green-500 text-white rounded-lg">
                 <h1 className="font-bold text-xl">Actualizar Producto</h1>
-                <button 
-                  type="button" 
-                  onClick={() => setOpenEdit(false)} 
+                <button
+                  type="button"
+                  onClick={() => setOpenEdit(false)}
                   className="w-8 h-8 flex items-center justify-center bg-red-500 rounded-full text-white hover:bg-red-600 transition"
                 >
                   ✕
@@ -292,26 +316,26 @@ const ProductosPagesDash = () => {
 
               {/* Imagen + Nombre + Precio */}
               <div className="flex items-center">
-                <img 
+                <img
                   src={imgTest}
-                  alt="Producto" 
+                  alt="Producto"
                   className="w-auto h-[140px] object-cover rounded-lg border border-gray-300 mr-4"
                 />
-                <div className="flex flex-col flex-grow  max-h-[150px]">
-                  <input 
-                    type="text" 
-                    placeholder="Nombre" 
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500" 
-                    {...register("nombre")} 
+                <div className="flex flex-col flex-grow max-h-[150px]">
+                  <input
+                    type="text"
+                    placeholder="Nombre"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    {...register("nombre")}
                   />
                   {errors.nombre && <span className="text-red-600 text-sm">El nombre es requerido o está duplicado</span>}
 
                   <label className="text-lg font-semibold mt-2">Precio</label>
-                  <input 
-                    type="number" 
-                    placeholder="Precio" 
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"  
-                    {...register("precio", {min: 0})} 
+                  <input
+                    type="number"
+                    placeholder="Precio"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    {...register("precio", { min: 0 })}
                     min="0"
                   />
                   {errors.precio && <span className="text-red-600 text-sm">El precio es requerido</span>}
@@ -322,11 +346,11 @@ const ProductosPagesDash = () => {
               <div className="flex gap-3 w-full">
                 <div className="flex flex-col w-full">
                   <label className="text-lg font-semibold">Altura</label>
-                  <input 
-                    type="number" 
-                    placeholder="Altura" 
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"  
-                    {...register("altura", {min: 0})} 
+                  <input
+                    type="number"
+                    placeholder="Altura"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    {...register("altura", { min: 0 })}
                     min="0"
                   />
                   {errors.altura && <span className="text-red-600 text-sm">La altura es requerida</span>}
@@ -334,38 +358,37 @@ const ProductosPagesDash = () => {
 
                 <div className="flex flex-col w-full">
                   <label className="text-lg font-semibold">Ancho</label>
-                  <input 
-                    type="number" 
-                    placeholder="Ancho" 
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"  
-                    {...register("ancho", {min: 0})} 
+                  <input
+                    type="number"
+                    placeholder="Ancho"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    {...register("ancho", { min: 0 })}
                     min="0"
-                    // readOnly
                   />
                 </div>
               </div>
 
               {/* Peso + Stock */}
-              <div className="flex gap-3 w-full ">
+              <div className="flex gap-3 w-full">
                 <div className="flex flex-col w-full">
                   <label className="text-lg font-semibold">Peso</label>
-                  <input 
-                    type="number" 
-                    placeholder="Peso" 
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"  
-                    {...register("peso", {min: 0})} 
+                  <input
+                    type="number"
+                    placeholder="Peso"
+                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                    {...register("peso", { min: 0 })}
                     min="0"
                   />
                   {errors.peso && <span className="text-red-600 text-sm">El peso es requerido</span>}
                 </div>
-                
+
                 <div className="flex flex-col w-full">
                   <label className="text-lg font-semibold">Stock</label>
-                  <input 
-                    type="number" 
-                    placeholder="stock" 
+                  <input
+                    type="number"
+                    placeholder="stock"
                     className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                    {...register("stock", {min: 0})} 
+                    {...register("stock", { min: 0 })}
                     min="0"
                   />
                   {errors.stock && <span className="text-red-600 text-sm">El stock es requerido</span>}
@@ -374,29 +397,29 @@ const ProductosPagesDash = () => {
 
               {/* Categoria */}
               <label className="text-lg font-semibold mt-2">Categoria</label>
-              <input 
-                type="text" 
-                placeholder="Nombre Categoria" 
-                className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"  
-                {...register("categoria", {min: 0})} 
-                min="0"
-              />
-              {errors.precio && <span className="text-red-600 text-sm">La categoria es requerida</span>}
+              <select
+                {...register("categoria")}
+                className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              >
+                <option value="Mates">Mates</option>
+                <option value="Termos">Termos</option>
+                <option value="Yerbas">Yerbas</option>
+                <option value="Bombillas">Bombillas</option>
+                <option value="CanastaMatera">Canasta Matera</option>
+              </select>
 
               {/* Descripcion */}
               <label className="text-lg font-semibold mt-2">Descripcion</label>
-              <textarea 
-                type="text" 
-                placeholder="Descripcion" 
-                className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"  
-                {...register("descripcion")} 
+              <textarea
+                placeholder="Descripcion"
+                className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                {...register("descripcion")}
               />
-              {errors.categoria && <span className="text-red-600 text-sm">La categoría es requerida</span>}
 
               {/* Destacar */}
               <label className="text-lg font-semibold">¿Destacar?</label>
-              <select 
-                {...register("featured")} 
+              <select
+                {...register("featured")}
                 className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
               >
                 <option value="false">No destacar</option>
@@ -404,8 +427,8 @@ const ProductosPagesDash = () => {
               </select>
 
               {/* Botón de enviar */}
-              <button 
-                type="submit"  
+              <button
+                type="submit"
                 className="w-full text-white bg-green-500 rounded-lg p-3 font-bold mt-2 hover:bg-green-600 transition"
               >
                 Actualizar
@@ -414,10 +437,6 @@ const ProductosPagesDash = () => {
           </div>
         </div>
       )}
-
-      {/* FORMULARIO DE CREACIÓN */}
-      {openCreate && <FormCreatePage closeModal={closeCreateModal} />}
-
     </div>
   );
 };

@@ -12,7 +12,7 @@ import img from "../assets/img/img-mate-7.jpg";
 import { Link } from 'react-router-dom';
 
 const ProductosPages = () => {
-  const { product, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
+  const { products, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
   const [openCreate, setOpenCreate] = useState(false); // Modal para el form de creación
   const [openDetalle, setOpenDetalle] = useState(false); // Modal para ver detalles
   const [selectedProduct, setSelectedProduct] = useState(null); // Estado para producto seleccionado para editar
@@ -27,7 +27,7 @@ const ProductosPages = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
-    let productsFiltered = [...product];
+    let productsFiltered = [...(products || [])];
 
     // Filtrar por categoría o lo que ya tienes
     if (category) {
@@ -42,8 +42,7 @@ const ProductosPages = () => {
     }
 
     setFilteredProducts(productsFiltered);
-  }, [product, category, sortType, searchTerm]);
-  
+  }, [products, category, sortType, searchTerm]);
   
   // Paginacion
   const [currentPage, setCurrentPage] = useState(1);
@@ -64,9 +63,8 @@ const ProductosPages = () => {
     getP();
   }, []);
 
-  // console.log("Products: ", product);
   useEffect(() => {
-    let productsFiltered = [...product];
+    let productsFiltered = [...(products || [])];
     
     if (category) {
       productsFiltered = productsFiltered.filter(p => p.categoria === category);
@@ -90,7 +88,7 @@ const ProductosPages = () => {
     }
 
     setFilteredProducts(productsFiltered);
-  }, [product, category, sortType]);
+  }, [products, category, sortType]);
   
 
   // Cuando cambia el selectedProduct se resetea el form
@@ -119,7 +117,7 @@ const ProductosPages = () => {
         setOpenEdit(false); // Cerrar el modal de edición
         await getProducts();  // Refrescar la lista de productos
         Swal.fire({
-          text: 'Producto actulizado correctamente.',
+          text: 'Producto actualizado correctamente.',
           icon: 'success',
           toast: true, // Esto hace que sea una alerta pequeña como un toast
           position: 'bottom-end', // Posicionada en la parte inferior derecha
@@ -172,7 +170,7 @@ const ProductosPages = () => {
             <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] hover:shadow-2xl">
               <div className='flex flex-col justify-center h-fit w-full'>
                 <Link to={`/producto-detalle/${item.id}`}>
-                  <img src={img} className='h-auto w-58 my-4 border rounded-md'/>
+                  <img src={img} className='h-auto w-58 my-4 border rounded-md' alt={item.nombre}/>
                   <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
                   <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
                   <div className='flex justify-between mb-2'>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.apirest.apirestfull.security.entity.Usuario;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -47,5 +48,6 @@ public class Producto implements Serializable{
     // Relacion con la tabla usaurios
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "roles", "productos"})
     private Usuario usuario;
 }

@@ -93,7 +93,7 @@ const ProductoDetalle = () => {
         </div>)}
         
         <p className="mt-10 p-2 h-auto w-[500px] bg-gray-200 rounded-md "> 
-            <h3 className="font-semibold">¿TIENE GARANTÍA MI PRODUCTO?</h3>
+            <span className="font-semibold">¿TIENE GARANTÍA MI PRODUCTO?</span><br/>
             Si, otorgamos un mes de garantía por fallas de nuestro taller que impidan su uso. En caso de que suceda, verificaremos el problema y trataremos de resolverlo lo antes posible. No se aceptarán reclamos de mates curados. El trabajo en nuestros mates es 100% artesanal, en el que se trata de lograr la perfección, siempre teniendo en cuenta que es realizado a mano y no por ninguna máquina. Si esta situación ocurre, te invitamos a comunicarte a nuestro whatsapp adjuntando detalles del problema, lo verificaremos e intentaremos resolverlo lo antes posible.
         </p>
       </div>

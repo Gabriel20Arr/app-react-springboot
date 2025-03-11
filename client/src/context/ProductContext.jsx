@@ -1,6 +1,12 @@
 import { createContext, useContext, useState } from "react";
-import { productRequest, createProductRequest, productsRequest, deleteProductRequest, actualizarProductRequest } from "../authentication/product"
-import Cookies  from "js-cookie"
+import { 
+    productRequest, 
+    createProductRequest, 
+    productsRequest,
+    myProductsRequest, 
+    deleteProductRequest, 
+    actualizarProductRequest 
+} from "../authentication/product"
 
 export const ProductContext = createContext();
 export const useProductContext = () => {
@@ -8,23 +14,24 @@ export const useProductContext = () => {
     if(!context) {
         throw new Error("useProduct tiene que estar dentro de un provider");
     }
-
     return context;
 }
 
-
 export function ProductProvider({children}) {
-    const [product, setProduct] = useState([])
+    const [products, setProducts] = useState([])
+    const [myProducts, setMyProducts] = useState([])
     const [idProduct, setIdProduct] = useState([])
     const [errorPut, setErrorPut] = useState(null)
     const [errorPost, setErrorPost] = useState(null)
 
     const createProduct = async (producto) => {
-        // console.log("prod: ", producto);
         try {
             const res = await createProductRequest(producto);
             console.log(res);
             setErrorPost(null)
+            // Actualizar la lista de productos después de crear uno nuevo
+            await getProducts();
+            await getMyProducts();
         } catch (error) {
             setErrorPost(error)
             console.log(error);
@@ -32,40 +39,52 @@ export function ProductProvider({children}) {
     }
 
     const getProducts = async() => {
-        const token = Cookies.get("token");
-        const res = await productsRequest(token);
-        setProduct(res.data)
-        console.log("getPorducts: ", res);  
+        try {
+            const res = await productsRequest();
+            setProducts(res.data)
+        } catch (error) {
+            console.error("Error al obtener productos:", error);
+        }
+    }
+
+    const getMyProducts = async() => {
+        try {
+            const res = await myProductsRequest();
+            setMyProducts(res.data)
+        } catch (error) {
+            console.error("Error al obtener mis productos:", error);
+        }
     }
 
     const getProduct = async (id) => {
         try {
-          const res = await productRequest(id);  // Hacemos la petición
-          setIdProduct(res.data);  // Actualizamos el estado si es necesario
-          return res.data;  // Devolvemos los datos para que puedan ser utilizados
+            const res = await productRequest(id);
+            setIdProduct(res.data);
+            return res.data;
         } catch (error) {
-          console.error("Error al obtener el producto:", error);
-          return null;  // O algún valor por defecto en caso de error
+            console.error("Error al obtener el producto:", error);
+            return null;
         }
-      };
-      
+    };
 
-    // Función para eliminar un producto
     const deleteProduct = async (id) => {
         try {
             await deleteProductRequest(id);
-            // Actualiza la lista de productos después de la eliminación
-            await setProduct(product);
+            // Actualizar ambas listas después de eliminar
+            await getProducts();
+            await getMyProducts();
         } catch (error) {
             console.error("Error al eliminar el producto:", error);
         }
     }
 
-    
     const actualizarProduct = async (producto) => {
         try {
             await actualizarProductRequest(producto);
             setErrorPut(null);
+            // Actualizar ambas listas después de actualizar
+            await getProducts();
+            await getMyProducts();
         } catch (error) {
             setErrorPut(error)
             console.error("Error al actualizar el producto:", error);
@@ -74,9 +93,11 @@ export function ProductProvider({children}) {
     
     return(
         <ProductContext.Provider value={{
-            product,
+            products,
+            myProducts,
             createProduct,
             getProducts,
+            getMyProducts,
             getProduct,
             idProduct, 
             setIdProduct,

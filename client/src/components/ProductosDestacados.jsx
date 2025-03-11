@@ -1,7 +1,3 @@
-import img1 from "../assets/img/imgP-Dest/test-1-yerba.webp"
-import img2 from "../assets/img/imgP-Dest/test-2-yerba.webp"
-import img3 from "../assets/img/imgP-Dest/test-5-yerba.webp"
-import img4 from "../assets/img/imgP-Dest/test-7-yerba.webp"
 import imageTest from "../assets/img/imgP-Dest/test-8-yerba.webp"
 
 import React, { useEffect, useState } from "react";
@@ -12,95 +8,19 @@ import { Link } from "react-router-dom"
 
 import { useProductContext } from '../context/ProductContext';
 
-// const dataP = [
-//   {
-//     id: 1,
-//     name: "Yerba Mate Clásica",
-//     image: img1,
-//     price: 10.99,
-//     description: "Yerba mate tradicional con un sabor intenso y duradero.",
-//     category: "Yerba",
-//     rating: 4.5,
-//     featured:false
-//   },
-//   {
-//     id: 2,
-//     name: "Mate de Madera",
-//     image: img2,
-//     price: 15.99,
-//     description: "Mate hecho de madera de bambu, ideal para disfrutar tu yerba organica.",
-//     category: "Accesorios",
-//     rating: 4.8,
-//     featured:true
-//   },
-//   {
-//     id: 3,
-//     name: "Termo Acero Inoxidable",
-//     image: img3,
-//     price: 25.99,
-//     description: "Termo de acero inoxidable con capacidad de 1 litro.",
-//     category: "Accesorios",
-//     rating: 4.6,
-//     featured:true
-//   },
-//   {
-//     id: 4,
-//     name: "Bombilla de Acero",
-//     image: img4,
-//     price: 8.99,
-//     description: "Bombilla de acero inoxidable con filtro desmontable.",
-//     category: "Accesorios",
-//     rating: 4.7,
-//     featured:true
-//   },
-//   {
-//     id: 5,
-//     name: "Yerba Mate Orgánica",
-//     image: img5,
-//     price: 12.99,
-//     description: "Yerba mate orgánica, sin conservantes ni aditivos.",
-//     category: "Yerba",
-//     rating: 4.9,
-//     featured:true
-//   },
-//   {
-//     id: 6,
-//     name: "Termo Acero Inoxidable",
-//     image: img3,
-//     price: 25.99,
-//     description: "Termo de acero inoxidable con capacidad de 1 litro.",
-//     category: "Accesorios",
-//     rating: 4.6,
-//     featured:true
-//   },  
-//   {
-//     id: 7,
-//     name: "Yerba Orgánica",
-//     image: img5,
-//     price: 12.99,
-//     description: "Yerba mate orgánica, sin conservantes ni aditivos.",
-//     category: "Yerba",
-//     rating: 4.9,
-//     featured:true
-//   },
-// ]
-
-
 const ProductosDestacados = () => {
   // const [products, setProducts] = useState(dataP);
   const [slidesToShow, setSlidesToShow] = useState(5);
-  const { product, getProducts } = useProductContext();
+  const { products, getProducts } = useProductContext();
   
-  console.log(product);
   useEffect(() => {
     async function getP() {
       const dat =  await getProducts();
-      console.log(dat);
     }
     getP();
   }, []);
   
-  const ProductFeatured = product.filter(prod => prod.featured === true);
+  const ProductFeatured = products.filter(prod => prod.featured === true);
 
   useEffect(() => {
     const updateSlidesToShow = () => {
