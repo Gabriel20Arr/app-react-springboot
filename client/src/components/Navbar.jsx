@@ -6,14 +6,16 @@ import Cookies from 'js-cookie';
 import { FiMenu, FiX } from "react-icons/fi";
 
 import lupa from "../assets/img/header/lupa-de-busqueda.png"
-import cart from "../assets/img/carrito-de-compras.png"
+import { FiShoppingCart } from "react-icons/fi";
+import Cart from "./Cart";
 
 const Navbar = () => {
   const { profile, user, isAuthtenticated, setIsAuthtenticated } = useAuthContext()
   const { searchTerm, setSearchTerm } = useSearchContext();
   const [menuOpen, setMenuOpen] = useState(false); // Menú móvil
   const [profileOpen, setProfileOpen] = useState(false); // Menú perfil
-  
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   useEffect(() => {
     async function getProfile() {
       await profile();
@@ -28,114 +30,122 @@ const Navbar = () => {
   }
 
   return (
-    <nav className="w-full font-heading">
-      <div className="w-full">
-        {/* Primer navbar */}
-        <div className="w-full h-12 flex justify-between bg-green-600 font-bold py-2 px-5 border-b border-gray-300 fixed z-[998]">
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-white hover:text-gray-300">Inicio</Link>
-            <Link to="/productos" className="text-white hover:text-gray-300">Productos</Link>
-            <Link to="/aboutMe" className="text-white hover:text-gray-300">Sobre Nosotros</Link>
-            <Link to="/contact" className="text-white hover:text-gray-300">Contacto</Link>
-            {isAuthtenticated && user?.roles?.[0]?.id === 1 && (
-              <Link to="/dash-admin" className="text-white hover:text-gray-300">Dashboard</Link>
-            )}
+    <>
+      <nav className="w-full font-heading">
+        <div className="w-full">
+          {/* Primer navbar */}
+          <div className="w-full h-12 flex justify-between bg-green-600 font-bold py-2 px-5 border-b border-gray-300 fixed z-[998]">
+            <div className="hidden md:flex items-center space-x-6">
+              <Link to="/" className="text-white hover:text-gray-300">Inicio</Link>
+              <Link to="/productos" className="text-white hover:text-gray-300">Productos</Link>
+              <Link to="/aboutMe" className="text-white hover:text-gray-300">Sobre Nosotros</Link>
+              <Link to="/contact" className="text-white hover:text-gray-300">Contacto</Link>
+              {isAuthtenticated && user?.roles?.[0]?.id === 1 && (
+                <Link to="/dash-admin" className="text-white hover:text-gray-300">Dashboard</Link>
+              )}
+            </div>
+
+            {/* Buscador */}
+            <div className="hidden md:flex items-center border border-gray-500 bg-white rounded-md px-4 py-2">
+              <img src={lupa} alt="search" className="w-4 h-4"/>
+              <input 
+                type="search" 
+                placeholder="Buscar productos.." 
+                className="text-sm text-black p-1 focus:outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
+
+          {/* Segundo navbar */}
+          <div className="w-full flex justify-between items-center bg-green-600 font-bold py-3 px-5 relative top-12 z-[997]">
+            {/* Imagen de perfil */}
+            <div className="relative">
+              <button 
+                onClick={() => setProfileOpen(!profileOpen)} 
+                className="flex items-center justify-center border-1 rounded-full"
+              >
+                <img
+                  className="border-2 rounded-full h-12 w-12 hover:border-blue-500"
+                  src={`https://ui-avatars.com/api/?name=${user?.nombre || "nombre"}`}
+                  alt="nombre"
+                />
+              </button>
+
+              {/* Menú desplegable del perfil */}
+              {profileOpen && (
+                <div className="absolute top-0 left-0 mt-[55px] bg-white rounded-md shadow-lg z-[999] w-[130px] border">
+                  <ul className="">
+                    <li className='w-full px-2 text-right'>
+                      <button 
+                        className="bg-red-500 w-5 h-5 text-xs rounded-full"
+                        onClick={() => setProfileOpen(false)}
+                      >X</button>
+                    </li>
+                    <li>
+                      <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
+                        Perfil
+                      </Link>
+                    </li>
+                    <li>
+                      <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
+                        Cerrar sesión
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Logo */}
+            <h1 className="w-28 flex flex-col text-white text-2xl font-serif">
+              <span className="w-full text-center">Tu</span>
+              <span className="w-full text-end">Mate</span>
+            </h1>
+
+            {/* Carrito de compras */}
+            <div className="flex items-center">
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="bg-green-500 px-4 py-1 rounded-sm flex items-center gap-2"
+              >
+                <FiShoppingCart className="h-8 w-8" />
+              </button>
+            </div>
+          </div>
+        </div>  
+
+
+        {/* Ícono de menú (Solo en móviles) */}
+        <div className="md:hidden w-full h-12 flex justify-between bg-green-600 text-white font-bold py-2 px-5 border-b border-gray-300 fixed top-0 z-[999]">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-black">
+            {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
+          </button>
 
           {/* Buscador */}
-          <div className="hidden md:flex items-center border border-gray-500 bg-white rounded-md px-4">
+          <div className="flex items-center border border-gray-500 bg-white rounded-md px-4 ">
             <img src={lupa} alt="search" className="w-5 h-5"/>
-            <input 
-              type="search" 
-              placeholder="Buscar productos.." 
-              className="text-sm text-black p-1 focus:outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            <input type="search" placeholder="Buscar productos.." className="text-sm text-black p-1 focus:outline-none"/>
           </div>
         </div>
 
-        {/* Segundo navbar */}
-        <div className="w-full flex justify-between items-center bg-green-600 font-bold py-3 px-5 relative top-12 z-[997]">
-          {/* Imagen de perfil */}
-          <div className="relative">
-            <button 
-              onClick={() => setProfileOpen(!profileOpen)} 
-              className="flex items-center justify-center border-1 rounded-full"
-            >
-              <img
-                className="border-2 rounded-full h-12 w-12 hover:border-blue-500"
-                src={`https://ui-avatars.com/api/?name=${user?.nombre || "nombre"}`}
-                alt="nombre"
-              />
-            </button>
-
-            {/* Menú desplegable del perfil */}
-            {profileOpen && (
-              <div className="absolute top-0 left-0 mt-[55px] bg-white rounded-md shadow-lg z-[999] w-[130px] border">
-                <ul className="">
-                  <li className='w-full px-2 text-right'>
-                    <button 
-                      className="bg-red-500 w-5 h-5 text-xs rounded-full"
-                      onClick={() => setProfileOpen(false)}
-                    >X</button>
-                  </li>
-                  <li>
-                    <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
-                      Perfil
-                    </Link>
-                  </li>
-                  <li>
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-200">
-                      Cerrar sesión
-                    </button>
-                  </li>
-                </ul>
-              </div>
+        {/* Menú móvil */}
+        {menuOpen && (
+          <div className={`md:hidden bg-green-300 w-full fixed top-12 left-0 flex flex-col items-center py-4 space-y-4 transition-all duration-300 pt-5 z-[999] ${menuOpen ? 'opacity-100' : 'opacity-0 invisible'}`}>
+            <Link to="/" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Inicio</Link>
+            <Link to="/productos" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Productos</Link>
+            <Link to="/aboutMe" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Sobre Nosotros</Link>
+            <Link to="/contact" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Contacto</Link>
+            {isAuthtenticated && user?.roles?.[0]?.id === 1 && (
+              <Link to="/dash-admin" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Dashboard</Link>
             )}
           </div>
+        )}
+      </nav>
 
-          {/* Logo */}
-          <h1 className="w-28 flex flex-col text-white text-2xl font-serif">
-            <span className="w-full text-center">Tu</span>
-            <span className="w-full text-end">Mate</span>
-          </h1>
-
-          {/* Carrito de compras */}
-          <div className="flex items-center">
-            <img src={cart} alt="cart" className="w-9 h-9"/>
-          </div>
-        </div>
-      </div>  
-
-
-      {/* Ícono de menú (Solo en móviles) */}
-      <div className="md:hidden w-full h-12 flex justify-between bg-green-600 text-white font-bold py-2 px-5 border-b border-gray-300 fixed top-0 z-[999]">
-        <button onClick={() => setMenuOpen(!menuOpen)} className="text-black">
-          {menuOpen ? <FiX size={28} /> : <FiMenu size={28} />}
-        </button>
-
-        {/* Buscador */}
-        <div className="flex items-center border border-gray-500 bg-white rounded-md px-4 ">
-          <img src={lupa} alt="search" className="w-5 h-5"/>
-          <input type="search" placeholder="Buscar productos.." className="text-sm text-black p-1 focus:outline-none"/>
-        </div>
-      </div>
-
-      {/* Menú móvil */}
-      {menuOpen && (
-        <div className={`md:hidden bg-green-300 w-full fixed top-12 left-0 flex flex-col items-center py-4 space-y-4 transition-all duration-300 pt-5 z-[999] ${menuOpen ? 'opacity-100' : 'opacity-0 invisible'}`}>
-          <Link to="/" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Inicio</Link>
-          <Link to="/productos" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Productos</Link>
-          <Link to="/aboutMe" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Sobre Nosotros</Link>
-          <Link to="/contact" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Contacto</Link>
-          {isAuthtenticated && user?.roles?.[0]?.id === 1 && (
-            <Link to="/dash-admin" className="text-black hover:text-gray-300" onClick={() => setMenuOpen(false)}>Dashboard</Link>
-          )}
-        </div>
-      )}
-
-    </nav>
+      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </>
   );
 }
 

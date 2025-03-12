@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { CartProvider } from "./context/CartContext";
 import Register from "./pages/Sesion/Register";
 import Login from "./pages/Sesion/Login";
 import HomePages from "./pages/HomePage"
@@ -24,32 +25,34 @@ const App = () => {
   const isLogin = location.pathname === "/login"
   const isRegister = location.pathname === "/register"
   return (
-    <div  className="w-full min-h-screen flex flex-col items-center bg-gray-100">
-      { isLogin || isRegister ? null : <Navbar /> }
-      
-      <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />}/>
+    <CartProvider>
+      <div  className="w-full min-h-screen flex flex-col items-center bg-gray-100">
+        { isLogin || isRegister ? null : <Navbar /> }
         
-        <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<HomePages />}/>
-        <Route path="/profile" element={<ProfilePages />}/>
-        <Route path="/contact" element={<ContactPage />}/>
-        // Componnetes de ayuda para el usuario 
-        <Route path="/envio" element={< SeccionEnvio />}/>
-        <Route path="/pasarela-pago" element={< SeccionPasarelaPago />}/>
-        <Route path="/sucursal" element={< SeccionSucursal />}/>
-        <Route path="/experiencia" element={< SeccionExperiencia />}/>
-        <Route path="/productos" element={< ProductosPages />}/>
-        <Route path="/producto-detalle/:id" element={< ProductoDetalle />}/>
-        <Route path="/aboutMe" element={< SobreNosotros />}/>
-        <Route path="/dash-admin" element={< DashboardAdmin />}/>
-        </Route>
-      </Routes>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />}/>
+          
+          <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<HomePages />}/>
+          <Route path="/profile" element={<ProfilePages />}/>
+          <Route path="/contact" element={<ContactPage />}/>
+          // Componnetes de ayuda para el usuario 
+          <Route path="/envio" element={< SeccionEnvio />}/>
+          <Route path="/pasarela-pago" element={< SeccionPasarelaPago />}/>
+          <Route path="/sucursal" element={< SeccionSucursal />}/>
+          <Route path="/experiencia" element={< SeccionExperiencia />}/>
+          <Route path="/productos" element={< ProductosPages />}/>
+          <Route path="/producto-detalle/:id" element={< ProductoDetalle />}/>
+          <Route path="/aboutMe" element={< SobreNosotros />}/>
+          <Route path="/dash-admin" element={< DashboardAdmin />}/>
+          </Route>
+        </Routes>
 
-      { isLogin || isRegister ? null : <Footer className="relative bottom-0" /> }
-    
-    </div>
+        { isLogin || isRegister ? null : <Footer className="relative bottom-0" /> }
+      
+      </div>
+    </CartProvider>
   )
 }
 
