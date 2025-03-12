@@ -1,19 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { useProductContext } from '../context/ProductContext';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
-import imgTest from "../assets/img/imgP-Dest/test-1-yerba.webp"
 
 export const FormCreatePage = ({ onClose }) => {
   const { createProduct, getProducts, errorPost } = useProductContext();
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  
+  const [imagen, setImagen] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImagen(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await createProduct(data);
+      const formData = new FormData();
+      const productData = new Blob([JSON.stringify({
+        ...data,
+        featured: data.featured === 'true'
+      })], {
+        type: 'application/json'
+      });
+      
+      formData.append('producto', productData);
+      if (imagen) {
+        formData.append('imagen', imagen);
+      }
+
+      await createProduct(formData);
       await getProducts();
       reset();
+      setImagen(null);
+      setPreviewUrl(null);
       onClose();
       Swal.fire({
         text: 'Producto creado correctamente.',
@@ -48,11 +72,32 @@ export const FormCreatePage = ({ onClose }) => {
 
           {/* Imagen + Nombre + Precio */}
           <div className="flex items-center">
-            <img
-              src={imgTest}
-              alt="Producto"
-              className="w-auto h-[140px] object-cover rounded-lg border border-gray-300 mr-4"
-            />
+            <div className="relative w-[140px] h-[140px] mr-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              <div className="absolute inset-0 flex items-center justify-center border border-gray-300 rounded-lg overflow-hidden">
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center p-4">
+                    <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Click para subir imagen
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
             <div className="flex flex-col flex-grow max-h-[150px]">
               <input
                 type="text"

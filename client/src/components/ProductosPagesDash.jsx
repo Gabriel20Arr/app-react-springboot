@@ -10,7 +10,7 @@ import add from '../assets/img/agregar.png';
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import { TbFilterCode, TbFilterDollar } from "react-icons/tb";
-import imgTest from "../assets/img/imgP-Dest/test-1-yerba.webp"
+import imgTest from "../assets/img/OIP.jpg"
 
 import { FormCreatePage } from "../pages/FormCreatePage"
 
@@ -229,7 +229,7 @@ const ProductosPagesDash = () => {
             {currentProducts.length > 0 ? (
               currentProducts.map((item) => (
                 <tr key={item.id} className="border font-sans text-text text-lg">
-                  <td className="p-1"><img src={imgTest} className='w-20 h-20' alt={item.nombre} /></td>
+                  <td className="p-1"><img src={item.imagen || imgTest} className='w-20 h-20' alt={item.nombre} /></td>
                   <td className="border p-2">{item.nombre}</td>
                   <td className="px-2 w-fit line-clamp-3">{item.descripcion}</td>
                   <td className="border p-2">${item.precio}</td>

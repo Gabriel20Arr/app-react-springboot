@@ -11,5 +11,21 @@ export const productRequest = (id) => instance.get(`api/productos/${id}`);
 
 // Operaciones que requieren rol de admin
 export const deleteProductRequest = (id) => instance.delete(`api/productos/${id}`);
-export const actualizarProductRequest = (producto) => instance.put(`api/productos/${producto.id}`, producto);
-export const createProductRequest = producto => instance.post("api/productos/nuevo", producto);
+
+export const actualizarProductRequest = (formData) => {
+    const id = formData.get('producto') ? JSON.parse(formData.get('producto')).id : undefined;
+    if (!id) throw new Error('ID del producto es requerido');
+    
+    return instance.put(`api/productos/${id}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+export const createProductRequest = formData => 
+    instance.post("api/productos/nuevo", formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
