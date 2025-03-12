@@ -1,47 +1,97 @@
-App Tu Mate (spring Boot - MySQL - react - Tailwind)
+APP TU MATE - Documentación
+==========================
+Aplicación web e-commerce desarrollada con Spring Boot, MySQL, React y Tailwind CSS
 
-1- Header:✅
-	1- Primer seccion: 
-		- Inicio
-		- Productos con un menu para el filtrado de todos los productos
-		- Sobre Nosotros
-		- Contacto
-		- Buscador
-	2- Segunda seccion:
-		- Perfil
-		- Logo
-		- carito de compras 
+Estructura del Proyecto
+----------------------
+/api - Backend (Spring Boot)
+/client - Frontend (React)
 
-2- Carrusel ✅
-	- Tenemos imagenes publicitando productos mas vendidos o en oferta
+Tecnologías Principales
+----------------------
+- Backend: Spring Boot, MySQL, JWT
+- Frontend: React, Tailwind CSS
+- Almacenamiento de imágenes: Cloudinary
+- Autenticación: JWT (JSON Web Tokens)
 
-3- Seccion de ayuda sobre diferentes sistemas de la web ✅
-	- Envio (Hacemos envíos a cualquier parte de Argentina)
-	- Pasarela de pago (Pasos a seguir para realizar una compra desde la web)
-	- Sucursal (Lugar de la sucursal)
-	- Años en el sector (Experiencia en el sector de la venta)
+Características Principales
+-------------------------
+1. NAVEGACIÓN 
+   - Header Superior:
+     * Menú principal: Inicio, Productos, Sobre Nosotros, Contacto
+     * Buscador integrado
+     * Perfil de usuario
+     * Logo de la marca
+     * Carrito de compras
+   
+2. PÁGINA PRINCIPAL
+   a) Carrusel Principal 
+      - Showcase de productos destacados y ofertas
+      - Imágenes publicitarias rotativas
+   
+   b) Sección Informativa 
+      - Envíos a toda Argentina
+      - Guía de compra y pagos
+      - Información de sucursal
+      - Experiencia en el sector
+   
+   c) Productos Destacados
+      - Carrusel con máximo 15 productos
+      - Enlace directo a página de detalle 
+      - Pendiente:
+        * Implementación backend para gestión
+        * Sistema de marcado de productos destacados
+   
+   d) Productos Aleatorios 
+      - Vista previa con:
+        * Imagen del producto
+        * Precio
+        * Descripción breve
+        * Botón de agregar al carrito
+        * Indicador de envío gratis
+      - Pendiente:
+        * Sistema de stock 
+        * Sistema de puntuación 
 
-4- Productos destacados
-	- Mostramos los productos mas vendidos o seleccionados por el admin
-	- mostramos en forma de carrusel y un máximo de 15p
-	- Debe ser seleccionable y que lo lleve directo a la pagina de detalle ❌
-		-Primera opción: (Falta la parte del backend para poder agregar, eliminar y editar y que estén separados en una tabla)
-		-Segunda opción: (Agregarle una propiedad a todos los productos que tengan la opción de destacar)
+3. SISTEMA DE USUARIOS
+   - Registro de usuarios
+   - Login/Logout
+   - Perfil editable
+   - Roles: Usuario normal y Administrador
 
-5- Productos aleatorios ✅
-	- Debe ser seleccionable y que lo lleve directo a la pagina de compra
-	- Mostramos algunos productos
-	- Los productos deben tener
-		- Imagen
-		- Precio
-		- Breve descripción
-		- Agregar al carrito 
-		- Stock disponible ❌
-		- Si tiene envió gratis
-		- Posible Puntuación con estrellas o similar ❌
+4. GESTIÓN DE PRODUCTOS
+   - CRUD completo para administradores
+   - Categorización de productos
+   - Sistema de búsqueda y filtrado
+   - Gestión de imágenes con Cloudinary
 
+5. CARRITO DE COMPRAS
+   - Agregar/eliminar productos
+   - Modificar cantidades
+   - Cálculo automático de totales
+   - Persistencia de datos
 
+6. PROCESO DE COMPRA
+   - Selección de método de envío
+   - Cálculo de costos de envío
+   - Integración con sistema de pagos
+   - Confirmación de pedido
 
+7. PANEL ADMINISTRATIVO
+   - Gestión de productos
+   - Gestión de usuarios
+   - Gestión de pedidos
+   - Estadísticas y reportes
 
+Estado de Desarrollo
+-------------------
+ Completado
+ Pendiente de implementación
 
-
+Próximas Mejoras
+---------------
+1. Implementar sistema de stock
+2. Agregar sistema de puntuación de productos
+3. Completar funcionalidad de productos destacados
+4. Mejorar sistema de filtrado
+5. Implementar notificaciones en tiempo real

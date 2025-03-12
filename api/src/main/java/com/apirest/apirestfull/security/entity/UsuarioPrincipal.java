@@ -13,12 +13,12 @@ public class UsuarioPrincipal implements UserDetails{
     private String nombreUsuario;
     private String email;
     private String password;
-    private Number telefono;
+    private Float telefono;
     private String direccion;
     private Collection<? extends GrantedAuthority> authorities;
 
 
-    public UsuarioPrincipal(String nombre, String nombreUsuario, String email, String password, Number telefono, String direccion,
+    public UsuarioPrincipal(String nombre, String nombreUsuario, String email, String password, Float telefono, String direccion,
             Collection<? extends GrantedAuthority> authorities) {
         this.nombre = nombre;
         this.nombreUsuario = nombreUsuario;
@@ -76,7 +76,7 @@ public class UsuarioPrincipal implements UserDetails{
         return email;
     }
 
-    public Number getTelefono() {
+    public Float getTelefono() {
         return telefono;
     }
 

@@ -1,12 +1,10 @@
 package com.apirest.apirestfull.entity;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.apirest.apirestfull.security.entity.Usuario;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,14 +37,10 @@ public class Producto implements Serializable{
     private String descripcion;
     private boolean featured;
     private String categoria;
-
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "image_id", referencedColumnName = "id")
-    // private Image image;
     
-    // Relacion con la tabla usaurios
+    // Relacion con la tabla usuarios
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "password", "roles", "productos"})
     private Usuario usuario;
 }

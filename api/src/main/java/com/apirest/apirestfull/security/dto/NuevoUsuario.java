@@ -26,7 +26,7 @@ public class NuevoUsuario {
     private String password;
 
     @NotNull
-    private Number telefono;
+    private Float telefono;
 
     @NotBlank
     private String direccion;

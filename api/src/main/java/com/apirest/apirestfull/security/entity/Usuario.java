@@ -41,7 +41,7 @@ public class Usuario {
     private Set<Rol> roles = new HashSet<>();
 
     @NotNull
-    private Number telefono;    
+    private Float telefono;    
     @NotNull
     private String direccion;
 
@@ -54,7 +54,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(@NotEmpty String nombre, @NotEmpty String nombreUsuario, Number telefono, String direccion, @NotEmpty String email,
+    public Usuario(@NotEmpty String nombre, @NotEmpty String nombreUsuario, Float telefono, String direccion, @NotEmpty String email,
             @NotEmpty String password, String pais, String provincia) {
         this.nombre = nombre;
         this.nombreUsuario = nombreUsuario;

@@ -139,7 +139,7 @@ const ProductosPages = () => {
             <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] hover:shadow-2xl">
               <div className='flex flex-col justify-center h-fit w-full'>
                 <Link to={`/producto-detalle/${item.id}`}>
-                  <img src={img} className='h-auto w-58 my-4 border rounded-md' alt={item.nombre}/>
+                  <img src={item.imagen || img} className={`h-auto w-58 my-4 border rounded-md ${item.stock <= 0 ? 'grayscale' : ''}`} alt={item.nombre}/>
                   <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
                   <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
                   <div className='flex justify-between mb-2'>

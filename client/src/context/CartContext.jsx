@@ -61,6 +61,10 @@ export const CartProvider = ({ children }) => {
     return item ? item.quantity : 0;
   };
 
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
   const value = {
     cart,
     addToCart,
@@ -68,7 +72,8 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     clearCart,
     getCartTotal,
-    getItemQuantity
+    getItemQuantity,
+    getTotalItems
   };
 
   return (
