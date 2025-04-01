@@ -80,16 +80,25 @@ export function ProductProvider({children}) {
 
     const actualizarProduct = async (producto) => {
         try {
-            await actualizarProductRequest(producto);
+            const formData = new FormData();
+            
+            // Convertir el objeto producto a FormData
+            for (const key in producto) {
+                formData.append(key, producto[key]);
+            }
+    
+            await actualizarProductRequest(formData);
             setErrorPut(null);
+    
             // Actualizar ambas listas después de actualizar
             await getProducts();
             await getMyProducts();
         } catch (error) {
-            setErrorPut(error)
+            setErrorPut(error);
             console.error("Error al actualizar el producto:", error);
         }
-    }
+    };
+    
     
     return(
         <ProductContext.Provider value={{

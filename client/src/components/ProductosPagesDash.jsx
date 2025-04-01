@@ -14,7 +14,7 @@ import imgTest from "../assets/img/OIP.jpg"
 
 import { FormCreatePage } from "../pages/FormCreatePage"
 
-const ProductosPagesDash = () => {
+const ProductosPagesDash = ({ setIsModalOpen }) => {
   const { products, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
   const { user, isAuthtenticated } = useAuthContext();
   const navigate = useNavigate();
@@ -99,8 +99,13 @@ const ProductosPagesDash = () => {
   };
 
   // Gestión de modales
-  const openCreateModal = () => setOpenCreate(true);
-  const closeCreateModal = () => setOpenCreate(false);
+  const openCreateModal = () => {
+    setOpenCreate(true);
+  };
+
+  const closeCreateModal = () => {
+    setOpenCreate(false);
+  };
   
   // Actualizar formulario cuando se selecciona un producto
   useEffect(() => {
@@ -144,7 +149,7 @@ const ProductosPagesDash = () => {
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
-          width: '300px',
+          width: '300px'
         });
       }
     }
@@ -157,6 +162,7 @@ const ProductosPagesDash = () => {
         setSelectedProduct(null);
         setOpenEdit(false);
         await getProducts();
+        await getMyProducts();
         Swal.fire({
           text: 'Producto actualizado correctamente.',
           icon: 'success',
@@ -298,7 +304,7 @@ const ProductosPagesDash = () => {
       )}
 
       {/* Modal de edición */}
-      {openEdit && selectedProduct && (
+      {selectedProduct && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50">
           <div className="w-[750px] bg-white p-6 rounded-2xl shadow-lg">
             <form onSubmit={onSubmit} className="flex flex-col gap-3">

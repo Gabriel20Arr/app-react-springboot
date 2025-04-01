@@ -6,6 +6,7 @@ import { useCartContext } from '../context/CartContext';
 import Cookies from 'js-cookie';
 import { FiMenu, FiX, FiSearch, FiShoppingCart } from "react-icons/fi";
 import Cart from "./Cart";
+import LogoWeb from "/logo-web-.png"
 
 const Navbar = () => {
   const { profile, user, isAuthtenticated, setIsAuthtenticated } = useAuthContext()
@@ -82,7 +83,7 @@ const Navbar = () => {
           </div>
 
           {/* Segundo navbar */}
-          <div className={`w-full flex justify-between items-center bg-green-600 font-bold py-3 px-5 fixed top-12 z-[997] transition-transform duration-300 ${showSecondNav ? 'translate-y-0' : '-translate-y-full'}`}>
+          <div className={`w-full flex justify-between items-center bg-green-600 font-bold py-1 px-5 fixed top-12 z-[997] transition-transform duration-300 ${showSecondNav ? 'translate-y-0' : '-translate-y-full'}`}>
             {/* Imagen de perfil */}
             <div className="relative">
               <button 
@@ -100,7 +101,7 @@ const Navbar = () => {
               {profileOpen && (
                 <div className="absolute top-0 left-0 mt-[55px] bg-white rounded-md shadow-lg z-[999] w-[130px] border">
                   <ul className="">
-                    <li className='w-full px-2 text-right'>
+                    <li className='w-full px-2 pb-1 text-right border-b border-gray-400'>
                       <button 
                         className="bg-red-500 w-5 h-5 text-xs rounded-full"
                         onClick={() => setProfileOpen(false)}
@@ -122,10 +123,9 @@ const Navbar = () => {
             </div>
 
             {/* Logo */}
-            <h1 className="w-28 flex flex-col text-white text-2xl font-serif">
-              <span className="w-full text-center">Tu</span>
-              <span className="w-full text-end">Mate</span>
-            </h1>
+            <div className='flex items-center justify-center h-20 w-20  rounded-full'>
+              <img src={LogoWeb} alt="Logo" className="h-full m-0 p-0"/>
+            </div>
 
             {/* Carrito de compras */}
             <div className="flex items-center relative">

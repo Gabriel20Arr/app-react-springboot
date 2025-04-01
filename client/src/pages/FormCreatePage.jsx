@@ -9,6 +9,10 @@ export const FormCreatePage = ({ onClose }) => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const [imagen, setImagen] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [categorias, setCategorias] = useState([
+    "Mates", "Termos", "Yerbas", "Bombillas", "Canasta Matera"
+  ]);
+  const [nuevaCategoria, setNuevaCategoria] = useState("");
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -18,6 +22,22 @@ export const FormCreatePage = ({ onClose }) => {
     }
   };
 
+  const agregarCategoria = () => {
+    if (nuevaCategoria.trim() && !categorias.includes(nuevaCategoria.trim())) {
+      setCategorias([...categorias, nuevaCategoria.trim()]);
+      setNuevaCategoria("");
+      Swal.fire({
+        text: `Categoría "${nuevaCategoria.trim()}" agregada correctamente.`,
+        icon: 'success',
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        width: '300px',
+      });
+    }
+  };
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
@@ -55,8 +75,8 @@ export const FormCreatePage = ({ onClose }) => {
   });
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50">
-      <div className="w-[750px] bg-white p-6 rounded-2xl shadow-lg">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50 overflow-y-auto">
+      <div className="w-[750px] bg-white p-6 rounded-2xl shadow-lg relative top-[210px]">
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           {/* Header con título y botón de cerrar */}
           <div className="flex items-center justify-between p-4 bg-green-500 text-white rounded-lg">
@@ -173,20 +193,36 @@ export const FormCreatePage = ({ onClose }) => {
             </div>
           </div>
 
-          {/* Categoria */}
-          <label className="text-lg font-semibold mt-2">Categoria</label>
+          {/* Categoría */}
+          <label className="text-lg font-semibold mt-2">Categoría</label>
           <select
             {...register("categoria", { required: true })}
             className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
           >
             <option value="">Selecciona una categoría</option>
-            <option value="Mates">Mates</option>
-            <option value="Termos">Termos</option>
-            <option value="Yerbas">Yerbas</option>
-            <option value="Bombillas">Bombillas</option>
-            <option value="CanastaMatera">Canasta Matera</option>
+            {categorias.map((categoria, index) => (
+              <option key={index} value={categoria}>{categoria}</option>
+            ))}
           </select>
           {errors.categoria && <span className="text-red-600 text-sm">La categoría es requerida</span>}
+
+          {/* Agregar nueva categoría */}
+          <div className="flex gap-2 mt-2 w-full">
+            <input
+              type="text"
+              value={nuevaCategoria}
+              onChange={(e) => setNuevaCategoria(e.target.value)}
+              placeholder="Agregar nueva categoría"
+              className="p-3 text-text font-sans border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 w-full"
+            />
+            <button
+              type="button"
+              onClick={agregarCategoria}
+              className="p-3 font-sans border border-gray-300 rounded-lg bg-green-500 text-white hover:bg-green-600 transition"
+            >
+              Agregar
+            </button>
+          </div>
 
           {/* Descripcion */}
           <label className="text-lg font-semibold mt-2">Descripcion</label>

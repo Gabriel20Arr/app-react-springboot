@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import Register from "./pages/Sesion/Register";
@@ -16,18 +17,21 @@ import ProductosPages from "./pages/ProductosPages";
 import SobreNosotros from "./pages/SobreNosotros";
 import ProductoDetalle from "./components/ProductoDetalle";
 import DashboardAdmin from "./components/DashboardAdmin";
+import ProductosPagesDash from "./components/ProductosPagesDash";
 
 import { useLocation } from "react-router-dom";
-
 
 const App = () => {
   const location = useLocation();
   const isLogin = location.pathname === "/login"
   const isRegister = location.pathname === "/register"
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // Estado para el modal
+  
   return (
     <CartProvider>
       <div  className="w-full min-h-screen flex flex-col items-center bg-gray-100">
-        { isLogin || isRegister ? null : <Navbar /> }
+        { (isLogin || isRegister || isModalOpen) ? null : <Navbar /> }
         
         <Routes>
           <Route path="/register" element={<Register />} />
@@ -43,6 +47,7 @@ const App = () => {
           <Route path="/sucursal" element={< SeccionSucursal />}/>
           <Route path="/experiencia" element={< SeccionExperiencia />}/>
           <Route path="/productos" element={< ProductosPages />}/>
+          <Route path="/productos-dash" element={<ProductosPagesDash setIsModalOpen={setIsModalOpen} />} />
           <Route path="/producto-detalle/:id" element={< ProductoDetalle />}/>
           <Route path="/aboutMe" element={< SobreNosotros />}/>
           <Route path="/dash-admin" element={< DashboardAdmin />}/>
