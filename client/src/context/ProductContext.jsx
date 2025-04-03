@@ -77,25 +77,44 @@ export function ProductProvider({children}) {
             console.error("Error al eliminar el producto:", error);
         }
     }
-
-    const actualizarProduct = async (producto) => {
+    
+    const actualizarProduct = async (id, producto) => {
         try {
-            const formData = new FormData();
-            
-            // Convertir el objeto producto a FormData
-            for (const key in producto) {
-                formData.append(key, producto[key]);
+            if (!id) {
+                throw new Error("ID del producto es requerido");
             }
     
-            await actualizarProductRequest(formData);
+            const productoData = {
+                id: id,
+                nombre: producto.nombre,
+                precio: parseFloat(producto.precio),
+                peso: producto.peso ? parseFloat(producto.peso) : null,
+                altura: producto.altura ? parseFloat(producto.altura) : null,
+                ancho: producto.ancho ? parseFloat(producto.ancho) : null,
+                stock: producto.stock ? parseFloat(producto.stock) : null,
+                descripcion: producto.descripcion,
+                featured: producto.featured === "true" || producto.featured === true,
+                categoria: producto.categoria
+            };
+    
+            const formData = new FormData();
+            formData.append("producto", JSON.stringify(productoData));
+    
+            if (producto.imagen instanceof File) {
+                formData.append("imagen", producto.imagen);
+            }
+    
+            const res = await actualizarProductRequest(formData);
+            console.log("res:", res);
+            
             setErrorPut(null);
     
-            // Actualizar ambas listas después de actualizar
             await getProducts();
             await getMyProducts();
         } catch (error) {
             setErrorPut(error);
             console.error("Error al actualizar el producto:", error);
+            throw error;
         }
     };
     

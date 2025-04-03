@@ -56,4 +56,9 @@ public class ProductoService {
         productoRepository.deleteById(id);
     }
 
+    @Transactional
+    public void save(Producto producto) {
+        productoRepository.save(producto);
+    }
+
 }

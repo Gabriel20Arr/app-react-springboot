@@ -37,7 +37,7 @@ const Login = () => {
                     </div>
                 `,
                 toast: true,
-                position: 'bottom-end',
+                position: 'top-end',
                 showConfirmButton: false,
                 timer: 4500,
                 timerProgressBar: true,

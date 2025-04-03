@@ -21,6 +21,8 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
@@ -110,6 +112,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
   // Actualizar formulario cuando se selecciona un producto
   useEffect(() => {
     if (selectedProduct) {
+      setValue("id", selectedProduct.id);
       setValue("nombre", selectedProduct.nombre);
       setValue("precio", selectedProduct.precio);
       setValue("peso", selectedProduct.peso);
@@ -155,30 +158,58 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
     }
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        setSelectedImage(file);
+        setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
   const onSubmit = handleSubmit(async (values) => {
     try {
-      if (selectedProduct) {
-        await actualizarProduct({...values, id: selectedProduct.id });
-        setSelectedProduct(null);
-        setOpenEdit(false);
-        await getProducts();
-        await getMyProducts();
-        Swal.fire({
-          text: 'Producto actualizado correctamente.',
-          icon: 'success',
-          toast: true,
-          position: 'bottom-end',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          width: '300px',
-        });
-      }
+        if (selectedProduct) {
+            console.log("values: ", values);
+            console.log("selectedProduct: ", selectedProduct);
+            
+            const productData = {
+                nombre: values.nombre,
+                precio: values.precio,
+                peso: values.peso,
+                altura: values.altura,
+                ancho: values.ancho,
+                stock: values.stock,
+                descripcion: values.descripcion,
+                featured: values.featured,
+                categoria: values.categoria,
+                imagen: selectedImage // Agregamos la imagen seleccionada
+            };
+
+            await actualizarProduct(selectedProduct.id, productData);
+
+            setSelectedProduct(null);
+            setOpenEdit(false);
+            setPreviewImage(null);
+            setSelectedImage(null);
+            await getProducts();
+            
+            Swal.fire({
+                text: 'Producto actualizado correctamente.',
+                icon: 'success',
+                toast: true,
+                position: 'bottom-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                width: '300px',
+            });
+        }
     } catch (error) {
-      setErrorPut(error);
-      console.error("Error al actualizar producto:", error);
+        setErrorPut(error);
+        console.error("Error al actualizar producto:", error);
     }
-  });
+});
+
 
   // Si el usuario no está autenticado o no es admin, no renderizar nada
   if (!isAuthtenticated || !user?.roles?.[0] || user.roles[0].id === 2) {
@@ -216,10 +247,10 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
       </div>
 
       <div className="w-full overflow-x-auto">
-        <table className="min-w-full text-left border-collapse bg-gray-100">
+        <table className="min-w-full text-left border-collapse shadow-lg">
           <thead>
             <tr>
-              <th className="border p-2">Imagen</th>
+              <th className="border  p-2">Imagen</th>
               <th className="border p-2">Nombre</th>
               <th className="border p-2">Descripción</th>
               <th className="border p-2">Precio</th>
@@ -313,11 +344,39 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 <h1 className="font-bold text-xl">Actualizar Producto</h1>
                 <button
                   type="button"
-                  onClick={() => setOpenEdit(false)}
+                  onClick={() => {
+                    setOpenEdit(false);
+                    setSelectedProduct(null);
+                    setPreviewImage(null);
+                    setSelectedImage(null);
+                  }}
                   className="w-8 h-8 flex items-center justify-center bg-red-500 rounded-full text-white hover:bg-red-600 transition"
                 >
                   ✕
                 </button>
+              </div>
+
+              {/* Imagen */}
+              <div className="flex flex-col gap-2">
+                <label className="text-lg font-semibold">Imagen del Producto</label>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <img
+                      src={previewImage || selectedProduct.imagen || imgTest}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                    <span className="text-sm text-gray-500">Selecciona una nueva imagen para actualizar</span>
+                  </div>
+                </div>
               </div>
 
               {/* Imagen + Nombre + Precio */}
