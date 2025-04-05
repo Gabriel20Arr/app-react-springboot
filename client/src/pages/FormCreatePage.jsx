@@ -76,7 +76,7 @@ export const FormCreatePage = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50 overflow-y-auto">
-      <div className="w-[750px] bg-white p-6 rounded-2xl shadow-lg relative top-[210px]">
+      <div className="w-[1000px] h-[670px] bg-white p-5 rounded-2xl shadow-lg overflow-y-auto">
         <form onSubmit={onSubmit} className="flex flex-col gap-3">
           {/* Header con título y botón de cerrar */}
           <div className="flex items-center justify-between p-4 bg-green-500 text-white rounded-lg">

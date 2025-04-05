@@ -12,7 +12,7 @@ import 'sweetalert2/src/sweetalert2.scss'
 import { TbFilterCode, TbFilterDollar } from "react-icons/tb";
 import imgTest from "../assets/img/OIP.jpg"
 
-import { FormCreatePage } from "../pages/FormCreatePage"
+import { FormCreatePage } from "../pages/FormCreatePage";
 
 const ProductosPagesDash = ({ setIsModalOpen }) => {
   const { products, getProducts, deleteProduct, actualizarProduct, setErrorPut } = useProductContext();
@@ -217,7 +217,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
   }
 
   return (
-    <div className="max-w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-12 bg-white overflow-hidden">
+    <div className="max-w-full min-h-svh flex flex-col items-center text-black font-bold text-xl p-8 mt-8 bg-white overflow-hidden rounded-lg">
       <div className="w-full flex items-center justify-between text-black">
         <h1 className="font-bold mb-4 text-2xl">Productos</h1>
         <button onClick={openCreateModal} className='hover:scale-110'>
@@ -337,7 +337,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
       {/* Modal de edición */}
       {selectedProduct && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-md z-50">
-          <div className="w-[750px] bg-white p-6 rounded-2xl shadow-lg">
+          <div className="w-[1000px] h-[670px] bg-white p-5 rounded-2xl shadow-lg overflow-y-auto">
             <form onSubmit={onSubmit} className="flex flex-col gap-3">
               {/* Header con título y botón de cerrar */}
               <div className="flex items-center justify-between p-4 bg-green-500 text-white rounded-lg">
@@ -356,54 +356,46 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 </button>
               </div>
 
-              {/* Imagen */}
-              <div className="flex flex-col gap-2">
-                <label className="text-lg font-semibold">Imagen del Producto</label>
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <img
-                      src={previewImage || selectedProduct.imagen || imgTest}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border border-gray-300"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
+
+              {/* Imagen + Nombre + Precio */}
+              <div className="flex items-center">
+                {/* Imagen */}
+                <div className="flex">
+                  <div className="flex items-center gap-2 mr-4">
+                    <div className="relative">
+                      <img
+                        src={previewImage || selectedProduct.imagen || imgTest}
+                        alt="Preview"
+                        className="w-[280px] h-auto mr-4 mb-3 object-cover rounded-lg border border-gray-300"
+                      />
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
                       className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
-                    <span className="text-sm text-gray-500">Selecciona una nueva imagen para actualizar</span>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Imagen + Nombre + Precio */}
-              <div className="flex items-center">
-                <img
-                  src={imgTest}
-                  alt="Producto"
-                  className="w-auto h-[140px] object-cover rounded-lg border border-gray-300 mr-4"
-                />
-                <div className="flex flex-col flex-grow max-h-[150px]">
-                  <input
-                    type="text"
-                    placeholder="Nombre"
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                    {...register("nombre")}
-                  />
-                  {errors.nombre && <span className="text-red-600 text-sm">El nombre es requerido o está duplicado</span>}
+                  <div className="flex flex-col w-full h-14">
+                    <input
+                      type="text"
+                      placeholder="Nombre"
+                      className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      {...register("nombre")}
+                    />
+                    {errors.nombre && <span className="text-red-600 text-sm">El nombre es requerido o está duplicado</span>}
 
-                  <label className="text-lg font-semibold mt-2">Precio</label>
-                  <input
-                    type="number"
-                    placeholder="Precio"
-                    className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
-                    {...register("precio", { min: 0 })}
-                    min="0"
-                  />
-                  {errors.precio && <span className="text-red-600 text-sm">El precio es requerido</span>}
+                    <label className="text-lg font-semibold mt-2">Precio</label>
+                    <input
+                      type="number"
+                      placeholder="Precio"
+                      className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                      {...register("precio", { min: 0 })}
+                      min="0"
+                    />
+                    {errors.precio && <span className="text-red-600 text-sm">El precio es requerido</span>}
+                  </div>
                 </div>
               </div>
 
@@ -430,6 +422,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                     {...register("ancho", { min: 0 })}
                     min="0"
                   />
+                  {errors.ancho && <span className="text-red-600 text-sm">El ancho es requerido</span>}
                 </div>
               </div>
 

@@ -4,8 +4,10 @@ import { useProductContext } from '../context/ProductContext';
 import { useCartContext } from '../context/CartContext';
 import { useSearchContext } from '../context/SearchContext';
 import { useForm } from "react-hook-form";
-import { TbFilterCode, TbFilterDollar } from "react-icons/tb";
+import { TbFilterCode, TbFilterDollar, TbFilterX } from "react-icons/tb";
 import img from "../assets/img/OIP.jpg";
+import soldOut from "../assets/img/soldOut.png";
+
 
 const ProductosPages = () => {
   const { products, getProducts } = useProductContext();
@@ -81,6 +83,7 @@ const ProductosPages = () => {
           <option value="Yerbas">Yerbas</option>
           <option value="Bombillas">Bombillas</option>
           <option value="CanastaMatera">Canasta Matera</option>
+          <option value="Yerberos">Yerberos</option>
         </select>
         
         <TbFilterDollar size={"1.5rem"}/>
@@ -100,7 +103,11 @@ const ProductosPages = () => {
             <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] hover:shadow-2xl">
               <div className='flex flex-col justify-center h-fit w-full'>
                 <Link to={`/producto-detalle/${item.id}`}>
-                  <img src={item.imagen || img} className={`max-h-[300px] w-full my-4 border rounded-md ${item.stock <= 0 ? 'grayscale' : ''}`} alt={item.nombre}/>
+                  <div className='relative p-0 m-0'>
+                    <img src={item.imagen || img} className={`max-h-[300px] w-full my-4 border rounded-md`} alt={item.nombre}/>
+                    {item.stock <= 0 && <img src={soldOut} className='absolute top-[-12px] left-[-18px] h-24 w-auto z-30' alt="soldOut" />}
+                  </div>
+
                   <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
                   <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
                   <div className='flex justify-between mb-2'>
@@ -109,10 +116,11 @@ const ProductosPages = () => {
                   </div>
                 </Link>
                 <button 
-                  className='border rounded-md font-heading text-lg w-full py-1 bg-green-500 hover:scale-105'
+                  className='border rounded-md font-heading text-lg w-full py-1 bg-green-500 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed'
                   onClick={() => addToCart(item)}
+                  disabled={item.stock <= 0}
                 >
-                  Agregar al carrito
+                  {item.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
                 </button>
               </div>
             </div>

@@ -5,7 +5,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Link } from "react-router-dom"
-
+import soldOut from "../assets/img/soldOut.png";
 import { useProductContext } from '../context/ProductContext';
 
 const ProductosDestacados = () => {
@@ -65,11 +65,10 @@ const ProductosDestacados = () => {
               <Link to={`/producto-detalle/${product.id}`}>
                 <div className="bg-card shadow-md rounded-lg p-4 text-center w-[210px] h-[340px] mx-auto">
                   <div className="w-[180px] h-[180px] mx-auto mb-3 overflow-hidden rounded-lg">
-                    <img
-                      src={product.imagen || imageTest}
-                      alt={product.nombre}
-                      className="w-full h-full object-cover"
-                    />
+                  <div className='relative p-0 m-0'>
+                    <img src={product.imagen || imageTest} className={`max-h-[300px] w-full my-4 border rounded-md`} alt={product.nombre}/>
+                    {product.stock <= 0 && <img src={soldOut} className='absolute top-[-12px] left-[-18px] h-24 w-auto z-30' alt="soldOut" />}
+                  </div>
                   </div>
                   <div className="flex flex-col h-[120px] justify-between">
                     <div>
