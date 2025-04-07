@@ -1,6 +1,8 @@
 package com.apirest.apirestfull.entity;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 import com.apirest.apirestfull.security.entity.Usuario;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,6 +15,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +40,11 @@ public class Producto implements Serializable {
     private String descripcion;
     private boolean featured;
     private String categoria;
-    private String imagen;
+    
+    @ElementCollection
+    @CollectionTable(name = "producto_imagenes", joinColumns = @JoinColumn(name = "producto_id"))
+    @Column(name = "imagen_url")
+    private List<String> imagenes = new ArrayList<>();
     
     // Relacion con la tabla usuarios
     @JsonIgnore

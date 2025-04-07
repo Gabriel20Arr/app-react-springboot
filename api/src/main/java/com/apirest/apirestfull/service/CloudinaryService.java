@@ -11,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class CloudinaryService {
@@ -30,6 +32,16 @@ public class CloudinaryService {
         } catch (Exception e) {
             throw new RuntimeException("Error al subir archivo a Cloudinary: " + e.getMessage(), e);
         }
+    }
+
+    public List<String> uploadFiles(List<MultipartFile> files) {
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                urls.add(uploadFile(file));
+            }
+        }
+        return urls;
     }
 
     public void deleteFile(String publicId) {

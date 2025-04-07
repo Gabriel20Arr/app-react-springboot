@@ -131,7 +131,7 @@ const Navbar = () => {
             <div className="flex items-center relative">
               <button
                 onClick={() => setIsCartOpen(!isCartOpen)}
-                className="px-4 py-1 rounded-sm flex items-center gap-2"
+                className="cart-button px-4 py-1 rounded-sm flex items-center gap-2"
               >
                 <FiShoppingCart className="h-8 w-8 text-white" />
               </button>

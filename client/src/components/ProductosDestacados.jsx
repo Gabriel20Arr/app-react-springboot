@@ -66,7 +66,7 @@ const ProductosDestacados = () => {
                 <div className="bg-card shadow-md rounded-lg p-4 text-center w-[210px] h-[340px] mx-auto">
                   <div className="w-[180px] h-[180px] mx-auto mb-3 overflow-hidden rounded-lg">
                   <div className='relative p-0 m-0'>
-                    <img src={product.imagen || imageTest} className={`max-h-[300px] w-full my-4 border rounded-md`} alt={product.nombre}/>
+                    <img src={product.imagenes[0] || imageTest} className={`max-h-[300px] w-full my-4 border rounded-md`} alt={product.nombre}/>
                     {product.stock <= 0 && <img src={soldOut} className='absolute top-[-12px] left-[-18px] h-24 w-auto z-30' alt="soldOut" />}
                   </div>
                   </div>

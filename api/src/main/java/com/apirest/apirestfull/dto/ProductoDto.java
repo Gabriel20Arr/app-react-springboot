@@ -7,6 +7,8 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,7 +28,7 @@ public class ProductoDto {
     private Float stock;
     
     private String descripcion;
-    private String urlimg;
+    private List<String> urlimgs;
     private Boolean featured;
     private String categoria;
 
@@ -41,6 +43,7 @@ public class ProductoDto {
                 ", ancho=" + ancho +
                 ", stock=" + stock +
                 ", descripcion='" + descripcion + '\'' +
+                ", urlimgs=" + urlimgs +
                 ", featured=" + featured +
                 ", categoria='" + categoria + '\'' +
                 '}';

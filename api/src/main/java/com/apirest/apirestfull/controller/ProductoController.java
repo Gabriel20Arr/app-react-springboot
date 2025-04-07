@@ -2,6 +2,7 @@ package com.apirest.apirestfull.controller;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ import com.apirest.apirestfull.service.CloudinaryService;
 
 import io.micrometer.common.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 /**
  * Controlador para gestionar productos
@@ -79,7 +81,7 @@ public class ProductoController {
     /**
      * Crea un nuevo producto (solo para administradores)
      * @param productoDto Información del producto a crear
-     * @param imagen Imagen del producto
+     * @param imagenes Imágenes del producto
      * @param principal Información del usuario actual
      * @return Mensaje de confirmación
      */
@@ -87,7 +89,7 @@ public class ProductoController {
     @PostMapping("/nuevo")
     public ResponseEntity<Mensaje> create(
             @RequestPart("producto") ProductoDto productoDto,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen,
+            @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes,
             Principal principal) {
         
         if(StringUtils.isBlank(productoDto.getNombre())){
@@ -115,10 +117,16 @@ public class ProductoController {
             usuario
         );
 
-        // Subir imagen si está presente
-        if (imagen != null && !imagen.isEmpty()) {
-            String imageUrl = cloudinaryService.uploadFile(imagen);
-            producto.setImagen(imageUrl);
+        // Subir imágenes si están presentes
+        if (imagenes != null && !imagenes.isEmpty()) {
+            List<String> imageUrls = new ArrayList<>();
+            for (MultipartFile imagen : imagenes) {
+                if (!imagen.isEmpty()) {
+                    String imageUrl = cloudinaryService.uploadFile(imagen);
+                    imageUrls.add(imageUrl);
+                }
+            }
+            producto.setImagenes(imageUrls);
         }
 
         productoService.create(producto);
@@ -129,7 +137,8 @@ public class ProductoController {
      * Actualiza un producto existente (solo para administradores)
      * @param id ID del producto a actualizar
      * @param productoJson JSON del producto actualizado
-     * @param imagen Imagen del producto
+     * @param imagenes Imágenes del producto
+     * @param imagenesToDeleteJson JSON de imágenes a eliminar
      * @return Mensaje de confirmación
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -137,17 +146,11 @@ public class ProductoController {
     public ResponseEntity<Mensaje> update(
             @PathVariable("id") int id,
             @RequestPart("producto") String productoJson,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
-        
+            @RequestPart(value = "imagenes", required = false) List<MultipartFile> imagenes,
+            @RequestPart(value = "imagenesToDelete", required = false) String imagenesToDeleteJson) {
         try {
-            System.out.println("Recibiendo actualización para producto ID: " + id);
-            System.out.println("Datos JSON recibidos: " + productoJson);
-            
-            // Convertir el JSON a ProductoDto
             ObjectMapper objectMapper = new ObjectMapper();
             ProductoDto productoDto = objectMapper.readValue(productoJson, ProductoDto.class);
-            
-            System.out.println("ProductoDto convertido: " + productoDto.toString());
             
             if(!productoService.existsById(id))
                 return new ResponseEntity<>(new Mensaje("El producto no existe"), HttpStatus.NOT_FOUND);
@@ -167,34 +170,46 @@ public class ProductoController {
                 return new ResponseEntity<>(new Mensaje("Producto no encontrado"), HttpStatus.NOT_FOUND);
             }
 
-            // Actualizar solo los campos que no son null
-            if (productoDto.getNombre() != null) producto.setNombre(productoDto.getNombre());
-            if (productoDto.getPrecio() != null) producto.setPrecio(productoDto.getPrecio());
-            if (productoDto.getPeso() != null) producto.setPeso(productoDto.getPeso());
-            if (productoDto.getAltura() != null) producto.setAltura(productoDto.getAltura());
-            if (productoDto.getAncho() != null) producto.setAncho(productoDto.getAncho());
-            if (productoDto.getStock() != null) producto.setStock(productoDto.getStock());
-            if (productoDto.getDescripcion() != null) producto.setDescripcion(productoDto.getDescripcion());
-            if (productoDto.getFeatured() != null) producto.setFeatured(productoDto.getFeatured());
-            if (productoDto.getCategoria() != null) producto.setCategoria(productoDto.getCategoria());
+            // Obtener las imágenes a eliminar
+            List<String> imagenesToDelete = new ArrayList<>();
+            if (imagenesToDeleteJson != null && !imagenesToDeleteJson.isEmpty()) {
+                imagenesToDelete = objectMapper.readValue(imagenesToDeleteJson, new TypeReference<List<String>>() {});
+            }
 
-            // Actualizar imagen solo si se proporciona una nueva
-            if (imagen != null && !imagen.isEmpty()) {
-                try {
-                    String imageUrl = cloudinaryService.uploadFile(imagen);
-                    producto.setImagen(imageUrl);
-                    System.out.println("Nueva imagen subida: " + imageUrl);
-                } catch (Exception e) {
-                    System.err.println("Error al subir la imagen: " + e.getMessage());
-                    return new ResponseEntity<>(new Mensaje("Error al subir la imagen: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+            // Eliminar las imágenes del servidor
+            for (String imageUrl : imagenesToDelete) {
+                cloudinaryService.deleteFile(imageUrl);
+            }
+
+            // Mantener las imágenes existentes que no se van a eliminar
+            List<String> imageUrls = new ArrayList<>(producto.getImagenes());
+            imageUrls.removeAll(imagenesToDelete);
+
+            // Si hay nuevas imágenes, subirlas y agregarlas a la lista
+            if (imagenes != null && !imagenes.isEmpty()) {
+                for (MultipartFile imagen : imagenes) {
+                    if (!imagen.isEmpty()) {
+                        String imageUrl = cloudinaryService.uploadFile(imagen);
+                        imageUrls.add(imageUrl);
+                    }
                 }
             }
+
+            // Actualizar los campos del producto
+            producto.setNombre(productoDto.getNombre());
+            producto.setPrecio(productoDto.getPrecio());
+            producto.setPeso(productoDto.getPeso());
+            producto.setAltura(productoDto.getAltura());
+            producto.setAncho(productoDto.getAncho());
+            producto.setStock(productoDto.getStock());
+            producto.setDescripcion(productoDto.getDescripcion());
+            producto.setFeatured(productoDto.getFeatured());
+            producto.setCategoria(productoDto.getCategoria());
+            producto.setImagenes(imageUrls);
 
             productoService.save(producto);
             return new ResponseEntity<>(new Mensaje("Producto actualizado correctamente"), HttpStatus.OK);
         } catch (Exception e) {
-            System.err.println("Error al actualizar producto: " + e.getMessage());
-            e.printStackTrace();
             return new ResponseEntity<>(new Mensaje("Error al actualizar el producto: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

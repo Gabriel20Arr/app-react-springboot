@@ -7,19 +7,46 @@ import 'sweetalert2/src/sweetalert2.scss'
 export const FormCreatePage = ({ onClose }) => {
   const { createProduct, getProducts, errorPost } = useProductContext();
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
-  const [imagen, setImagen] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [imagenes, setImagenes] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
   const [categorias, setCategorias] = useState([
     "Mates", "Termos", "Yerbas", "Bombillas", "Canasta Matera"
   ]);
   const [nuevaCategoria, setNuevaCategoria] = useState("");
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImagen(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    const files = Array.from(e.target.files);
+    
+    if (files.length + imagenes.length > 4) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Solo puedes subir hasta 4 imágenes',
+        icon: 'error'
+      });
+      return;
     }
+
+    const newImages = files.map(file => {
+      const previewUrl = URL.createObjectURL(file);
+      return { file, previewUrl };
+    });
+
+    setImagenes([...imagenes, ...newImages]);
+    setPreviewUrls([...previewUrls, ...newImages.map(img => img.previewUrl)]);
+  };
+
+  const removeImage = (index) => {
+    const newImages = [...imagenes];
+    const newPreviewUrls = [...previewUrls];
+    
+    // Liberar la URL del objeto
+    URL.revokeObjectURL(newPreviewUrls[index]);
+    
+    newImages.splice(index, 1);
+    newPreviewUrls.splice(index, 1);
+    
+    setImagenes(newImages);
+    setPreviewUrls(newPreviewUrls);
   };
 
   const agregarCategoria = () => {
@@ -38,6 +65,7 @@ export const FormCreatePage = ({ onClose }) => {
       });
     }
   };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
       const formData = new FormData();
@@ -49,15 +77,17 @@ export const FormCreatePage = ({ onClose }) => {
       });
       
       formData.append('producto', productData);
-      if (imagen) {
-        formData.append('imagen', imagen);
-      }
+      
+      // Agregar todas las imágenes al FormData
+      imagenes.forEach((imagen, index) => {
+        formData.append(`imagenes`, imagen.file);
+      });
 
       await createProduct(formData);
       await getProducts();
       reset();
-      setImagen(null);
-      setPreviewUrl(null);
+      setImagenes([]);
+      setPreviewUrls([]);
       onClose();
       Swal.fire({
         text: 'Producto creado correctamente.',
@@ -90,6 +120,43 @@ export const FormCreatePage = ({ onClose }) => {
             </button>
           </div>
 
+          {/* Imágenes */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Imágenes del Producto (máximo 4)
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            {previewUrls.length < 4 && (
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            )}
+            <p className="mt-1 text-sm text-gray-500">
+              Puedes subir hasta 4 imágenes. Las imágenes deben ser en formato JPG, PNG o GIF.
+            </p>
+          </div>
+
           {/* Imagen + Nombre + Precio */}
           <div className="flex items-center">
             <div className="relative w-[140px] h-[140px] mr-4">
@@ -100,9 +167,9 @@ export const FormCreatePage = ({ onClose }) => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               />
               <div className="absolute inset-0 flex items-center justify-center border border-gray-300 rounded-lg overflow-hidden">
-                {previewUrl ? (
+                {previewUrls.length > 0 ? (
                   <img
-                    src={previewUrl}
+                    src={previewUrls[0]}
                     alt="Preview"
                     className="w-full h-full object-cover"
                   />

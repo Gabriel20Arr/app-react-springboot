@@ -1,31 +1,41 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useProductContext } from "../context/ProductContext"; 
+import { useCartContext } from "../context/CartContext";
 import { CiCircleMinus, CiCirclePlus  } from "react-icons/ci";
 import ConsultaEnvio from "./ConsultaEnvio";
+import ProductAnimation from './ProductAnimation';
+import img from "../assets/img/OIP.jpg";
+import imgOCA from "../assets/img/logo-oca-ok.png"
+import imgAndreani from "../assets/img/logo-andreani.png"
 
 import img1 from "../assets/img/img-mate-7.jpg"
 import img2 from "../assets/img/img-mate-5.jpg"
 import img3 from "../assets/img/img-mate-6.jpg"
 import img4 from "../assets/img/img-mate-4.jpeg"
-import imgOCA from "../assets/img/logo-oca-ok.png"
-import imgAndreani from "../assets/img/logo-andreani.png"
 
-const images = [img1, img2, img3, img4];
+const defaultImages = [img1, img2, img3, img4];
 
 const ProductoDetalle = () => {
   const { id } = useParams();
   const { getProduct } = useProductContext();
+  const { addToCart } = useCartContext();
   const [producto, setProducto] = useState(null);
   const [stocks, setStocks] = useState(0);
   const [isOpen, setIsOpen] = useState(true);
   const [personalizado, setPersonalizado] = useState("No");
-  const [mainImage, setMainImage] = useState(images[0]); 
+  const [mainImage, setMainImage] = useState(defaultImages[0]);
+  const [animatingProduct, setAnimatingProduct] = useState(null);
 
   useEffect(() => {
     const fetchProducto = async () => {
       const data = await getProduct(id);
       setProducto(data);
+      if (data?.imagenes?.length > 0) {
+        setMainImage(data.imagenes[0]);
+      } else {
+        setMainImage(defaultImages[0]);
+      }
     };
     fetchProducto();
   }, [id]);
@@ -42,6 +52,23 @@ const ProductoDetalle = () => {
     }
   };
 
+  const handleAddToCart = (event) => {
+    if (stocks > 0) {
+      const buttonRect = event.currentTarget.getBoundingClientRect();
+      const startPosition = {
+        x: buttonRect.left + (buttonRect.width / 2),
+        y: buttonRect.top + (buttonRect.height / 2)
+      };
+      
+      setAnimatingProduct({ ...producto, startPosition });
+      addToCart({ ...producto, cantidad: stocks });
+      setStocks(0);
+    }
+  };
+
+  const handleAnimationComplete = () => {
+    setAnimatingProduct(null);
+  };
 
   return !producto ? (
     <div className="flex justify-center items-center min-h-screen text-2xl">
@@ -57,7 +84,7 @@ const ProductoDetalle = () => {
           className="h-[600px] w-[500px] border-2 border-gray-300 rounded-md"
         />
         <div className="w-[500px] h-auto flex justify-between mt-4">
-          {images.map((img, index) => (
+          {(producto.imagenes?.length > 0 ? producto.imagenes : defaultImages).map((img, index) => (
             <img 
               key={index} 
               src={img} 
@@ -167,6 +194,7 @@ const ProductoDetalle = () => {
           <button 
             className={`h-12 w-fit p-3 font-semibold font-heading text-white text-xl rounded-2xl ${stocks > 0 ? "bg-green-700 hover:bg-green-800" : "bg-gray-500 cursor-not-allowed"}`}
             disabled={stocks === 0}
+            onClick={handleAddToCart}
           >
             Agregar al carrito
           </button>
@@ -210,6 +238,15 @@ const ProductoDetalle = () => {
           </div>
         </div>
       </div>
+
+      {/* Animación */}
+      {animatingProduct && (
+        <ProductAnimation
+          product={animatingProduct}
+          startPosition={animatingProduct.startPosition}
+          onAnimationComplete={handleAnimationComplete}
+        />
+      )}
     </div>
   );
 };

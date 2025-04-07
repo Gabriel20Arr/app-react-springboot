@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { TbFilterCode, TbFilterDollar, TbFilterX } from "react-icons/tb";
 import img from "../assets/img/OIP.jpg";
 import soldOut from "../assets/img/soldOut.png";
-
+import ProductAnimation from '../components/ProductAnimation';
 
 const ProductosPages = () => {
   const { products, getProducts } = useProductContext();
@@ -15,6 +15,7 @@ const ProductosPages = () => {
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
   const { register, handleSubmit, formState: {errors}, reset  } = useForm();
+  const [animatingProduct, setAnimatingProduct] = useState(null);
 
   const { searchTerm } = useSearchContext();
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -63,6 +64,22 @@ const ProductosPages = () => {
     setFilteredProducts(productsFiltered);
   }, [products, category, sortType, searchTerm]);
 
+  const handleAddToCart = (item, event) => {
+    // Obtener la posición del botón clickeado
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    const startPosition = {
+      x: buttonRect.left + (buttonRect.width / 2),
+      y: buttonRect.top + (buttonRect.height / 2)
+    };
+    
+    setAnimatingProduct({ ...item, startPosition });
+    addToCart(item);
+  };
+
+  const handleAnimationComplete = () => {
+    setAnimatingProduct(null);
+  };
+
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 20;
@@ -100,24 +117,24 @@ const ProductosPages = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 w-full text-xl">
         {currentProducts.length > 0 ? (
           currentProducts.map((item) => (
-            <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[400px] hover:shadow-2xl">
-              <div className='flex flex-col justify-center h-fit w-full'>
+            <div key={item.id} className="flex flex-col items-center px-4 pb-4 border-2 bg-white shadow-md rounded-lg w-[280px] min-h-[440px] hover:shadow-2xl relative">
+              <div className='flex flex-col justify-center h-[420px] w-full'>
                 <Link to={`/producto-detalle/${item.id}`}>
-                  <div className='relative p-0 m-0'>
-                    <img src={item.imagen || img} className={`max-h-[300px] w-full my-4 border rounded-md`} alt={item.nombre}/>
-                    {item.stock <= 0 && <img src={soldOut} className='absolute top-[-12px] left-[-18px] h-24 w-auto z-30' alt="soldOut" />}
+                  <div className='p-0 m-0 absolute top-0 left-4 right-4 bottom-0'>
+                    <img src={item.imagenes[0] || img} className={`max-h-[220px] w-full my-4 border rounded-md`} alt={item.nombre} />
+                    {item.stock <= 0 && <img src={soldOut} className='absolute top-1 left-[-18px] h-24 w-auto z-30' alt="soldOut" />}
                   </div>
 
-                  <h2 className="font-heading text-xl truncate mb-1">{item.nombre}</h2>
-                  <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3">{item.descripcion}</h2>
-                  <div className='flex justify-between mb-2'>
+                  <h2 className="font-heading text-xl truncate mb-1 absolute top-[250px] left-4 right-4">{item.nombre}</h2>
+                  <h2 className="text-sm font-sans text-textMuted mb-1 h-14 w-fit line-clamp-3 absolute top-[280px] left-4 right-4">{item.descripcion}</h2>
+                  <div className='flex justify-between mb-2 absolute top-[340px] left-4 right-4'>
                     <span className='text-price text-lg'>${item.precio}</span>
                     <span className='text-black text-lg'>Stock: {item.stock}</span>
                   </div>
                 </Link>
                 <button 
-                  className='border rounded-md font-heading text-lg w-full py-1 bg-green-500 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed'
-                  onClick={() => addToCart(item)}
+                  className='border rounded-md font-heading text-lg max-w-full mx-4 py-2 bg-green-500 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed absolute bottom-3 left-0 right-0'
+                  onClick={(e) => handleAddToCart(item, e)}
                   disabled={item.stock <= 0}
                 >
                   {item.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
@@ -142,6 +159,15 @@ const ProductosPages = () => {
           </button>
         ))}
       </div>
+
+      {/* Animación */}
+      {animatingProduct && (
+        <ProductAnimation
+          product={animatingProduct}
+          startPosition={animatingProduct.startPosition}
+          onAnimationComplete={handleAnimationComplete}
+        />
+      )}
     </div>
   );
 }

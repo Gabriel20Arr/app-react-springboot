@@ -182,7 +182,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 descripcion: values.descripcion,
                 featured: values.featured,
                 categoria: values.categoria,
-                imagen: selectedImage // Agregamos la imagen seleccionada
+                imagenes: selectedImage // Agregamos la imagen seleccionada
             };
 
             await actualizarProduct(selectedProduct.id, productData);
@@ -266,7 +266,13 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
             {currentProducts.length > 0 ? (
               currentProducts.map((item) => (
                 <tr key={item.id} className="border font-sans text-text text-lg">
-                  <td className="p-1"><img src={item.imagen || imgTest} className='w-20 h-20' alt={item.nombre} /></td>
+                  <td className="p-1">
+                    <img 
+                      src={item.imagenes && item.imagenes.length > 0 ? item.imagenes[0] : imgTest} 
+                      className='w-20 h-20 object-cover' 
+                      alt={item.nombre} 
+                    />
+                  </td>
                   <td className="border p-2">{item.nombre}</td>
                   <td className="px-2 w-fit line-clamp-3">{item.descripcion}</td>
                   <td className="border p-2">${item.precio}</td>
@@ -364,7 +370,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                   <div className="flex items-center gap-2 mr-4">
                     <div className="relative">
                       <img
-                        src={previewImage || selectedProduct.imagen || imgTest}
+                        src={previewImage || selectedProduct.imagenes[0] || imgTest}
                         alt="Preview"
                         className="w-[280px] h-auto mr-4 mb-3 object-cover rounded-lg border border-gray-300"
                       />

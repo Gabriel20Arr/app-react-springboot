@@ -27,7 +27,6 @@ export function ProductProvider({children}) {
     const createProduct = async (producto) => {
         try {
             const res = await createProductRequest(producto);
-            console.log(res);
             setErrorPost(null)
             // Actualizar la lista de productos después de crear uno nuevo
             await getProducts();
@@ -41,6 +40,7 @@ export function ProductProvider({children}) {
     const getProducts = async() => {
         try {
             const res = await productsRequest();
+            // console.log(res);
             setProducts(res.data)
         } catch (error) {
             console.error("Error al obtener productos:", error);

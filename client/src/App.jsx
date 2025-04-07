@@ -18,6 +18,7 @@ import SobreNosotros from "./pages/SobreNosotros";
 import ProductoDetalle from "./components/ProductoDetalle";
 import DashboardAdmin from "./components/DashboardAdmin";
 import ProductosPagesDash from "./components/ProductosPagesDash";
+import Alert from "./components/Alert";
 
 import { useLocation } from "react-router-dom";
 
@@ -32,6 +33,7 @@ const App = () => {
     <CartProvider>
       <div  className="w-full min-h-screen flex flex-col items-center bg-gray-100">
         { (isLogin || isRegister || isModalOpen) ? null : <Navbar /> }
+        <Alert />
         
         <Routes>
           <Route path="/register" element={<Register />} />
