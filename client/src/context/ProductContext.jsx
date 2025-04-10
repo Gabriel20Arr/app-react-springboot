@@ -94,14 +94,23 @@ export function ProductProvider({children}) {
                 stock: producto.stock ? parseFloat(producto.stock) : null,
                 descripcion: producto.descripcion,
                 featured: producto.featured === "true" || producto.featured === true,
-                categoria: producto.categoria
+                categoria: producto.categoria,
+                urlimgs: producto.existingImages || []
             };
     
             const formData = new FormData();
             formData.append("producto", JSON.stringify(productoData));
     
-            if (producto.imagen instanceof File) {
-                formData.append("imagen", producto.imagen);
+            // Agregar las nuevas imágenes al FormData
+            if (producto.imagenes && producto.imagenes.length > 0) {
+                producto.imagenes.forEach((imagen) => {
+                    formData.append("imagenes", imagen);
+                });
+            }
+    
+            // Agregar las imágenes a eliminar al FormData
+            if (producto.imagesToDelete && producto.imagesToDelete.length > 0) {
+                formData.append("imagenesToDelete", JSON.stringify(producto.imagesToDelete));
             }
     
             const res = await actualizarProductRequest(formData);
@@ -112,9 +121,8 @@ export function ProductProvider({children}) {
             await getProducts();
             await getMyProducts();
         } catch (error) {
-            setErrorPut(error);
             console.error("Error al actualizar el producto:", error);
-            throw error;
+            setErrorPut(error);
         }
     };
     

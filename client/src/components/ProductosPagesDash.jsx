@@ -21,8 +21,10 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagenes, setImagenes] = useState([]);
+  const [previewUrls, setPreviewUrls] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
+  const [imagesToDelete, setImagesToDelete] = useState([]);
   
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
@@ -125,8 +127,47 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
     }
   }, [selectedProduct, setValue]);
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    
+    if (files.length + imagenes.length > 4) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Solo puedes subir hasta 4 imágenes',
+        icon: 'error'
+      });
+      return;
+    }
+
+    const newImages = files.map(file => {
+      const previewUrl = URL.createObjectURL(file);
+      return { file, previewUrl };
+    });
+
+    setImagenes([...imagenes, ...newImages]);
+    setPreviewUrls([...previewUrls, ...newImages.map(img => img.previewUrl)]);
+  };
+
+  const removeImage = (index) => {
+    const newImages = [...imagenes];
+    const newPreviewUrls = [...previewUrls];
+    
+    // Liberar la URL del objeto
+    URL.revokeObjectURL(newPreviewUrls[index]);
+    
+    newImages.splice(index, 1);
+    newPreviewUrls.splice(index, 1);
+    
+    setImagenes(newImages);
+    setPreviewUrls(newPreviewUrls);
+  };
+
   const handleEditProduct = (item) => {
     setSelectedProduct(item);
+    setExistingImages(item.imagenes || []);
+    setImagenes([]);
+    setPreviewUrls([]);
+    setImagesToDelete([]);
     setOpenEdit(true);
   };
 
@@ -158,20 +199,9 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        setSelectedImage(file);
-        setPreviewImage(URL.createObjectURL(file));
-    }
-  };
-
   const onSubmit = handleSubmit(async (values) => {
     try {
         if (selectedProduct) {
-            console.log("values: ", values);
-            console.log("selectedProduct: ", selectedProduct);
-            
             const productData = {
                 nombre: values.nombre,
                 precio: values.precio,
@@ -182,15 +212,33 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 descripcion: values.descripcion,
                 featured: values.featured,
                 categoria: values.categoria,
-                imagenes: selectedImage // Agregamos la imagen seleccionada
+                imagenes: imagenes.map(img => img.file),
+                existingImages: existingImages,
+                imagesToDelete: imagesToDelete
             };
 
             await actualizarProduct(selectedProduct.id, productData);
 
-            setSelectedProduct(null);
+            // Actualizar el producto seleccionado con los nuevos datos
+            const updatedProduct = {
+                ...selectedProduct,
+                nombre: values.nombre,
+                precio: values.precio,
+                peso: values.peso,
+                altura: values.altura,
+                ancho: values.ancho,
+                stock: values.stock,
+                descripcion: values.descripcion,
+                featured: values.featured,
+                categoria: values.categoria,
+                imagenes: existingImages.filter(img => !imagesToDelete.includes(img))
+            };
+            setSelectedProduct(updatedProduct);
+
             setOpenEdit(false);
-            setPreviewImage(null);
-            setSelectedImage(null);
+            setImagenes([]);
+            setPreviewUrls([]);
+            setImagesToDelete([]);
             await getProducts();
             
             Swal.fire({
@@ -353,8 +401,8 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                   onClick={() => {
                     setOpenEdit(false);
                     setSelectedProduct(null);
-                    setPreviewImage(null);
-                    setSelectedImage(null);
+                    setImagenes([]);
+                    setPreviewUrls([]);
                   }}
                   className="w-8 h-8 flex items-center justify-center bg-red-500 rounded-full text-white hover:bg-red-600 transition"
                 >
@@ -370,16 +418,10 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                   <div className="flex items-center gap-2 mr-4">
                     <div className="relative">
                       <img
-                        src={previewImage || selectedProduct.imagenes[0] || imgTest}
+                        src={previewUrls.length > 0 ? previewUrls[0] : selectedProduct.imagenes[0] || imgTest}
                         alt="Preview"
                         className="w-[280px] h-auto mr-4 mb-3 object-cover rounded-lg border border-gray-300"
                       />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                    />
                     </div>
                   </div>
 
@@ -402,6 +444,69 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                     />
                     {errors.precio && <span className="text-red-600 text-sm">El precio es requerido</span>}
                   </div>
+                </div>
+              </div>
+
+              {/* Imágenes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Imágenes del Producto (máximo 4)
+                </label>
+                
+                {/* Imágenes existentes */}
+                {existingImages.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 border border-gray-300 p-2">
+                  {existingImages.map((url, index) => (
+                    <div key={`existing-${index}`} className="relative">
+                      <img
+                        src={url}
+                        alt={`Imagen existente ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                )}
+
+                {/* Input para nuevas imágenes */}
+                {previewUrls.length < 4 && (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  Puedes subir hasta 4 imágenes. Las imágenes deben ser en formato JPG, PNG o GIF.
+                </p>
+
+                {/* Nuevas imágenes */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 rounded-lg border border-gray-300 p-2 mt-2">
+                  {previewUrls.map((url, index) => (
+                    <div key={`new-${index}`} className="relative">
+                      <img
+                        src={url}
+                        alt={`Nueva imagen ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg border border-gray-300 p-2"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -489,6 +594,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 <option value="false">No destacar</option>
                 <option value="true">Destacar</option>
               </select>
+
 
               {/* Botón de enviar */}
               <button
