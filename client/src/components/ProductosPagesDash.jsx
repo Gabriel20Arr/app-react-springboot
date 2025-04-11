@@ -25,7 +25,9 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
-  
+
+  const [loading, setLoading] = useState(<div className='w-full h-full flex items-center justify-center'><div className='w-10 h-10 border-t-transparent border-b-transparent border-r-transparent border-l-transparent border-t-2 border-b-2 border-r-2 border-l-2 border-green-500 rounded-full animate-spin'></div></div>);
+  const [loadingEdit, setLoadingEdit] = useState(false);
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
@@ -217,29 +219,18 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 imagesToDelete: imagesToDelete
             };
 
-            await actualizarProduct(selectedProduct.id, productData);
+            setLoadingEdit(true);
+            const res = await actualizarProduct(selectedProduct.id, productData);
+            console.log(res);
+            await getProducts();
+            setLoadingEdit(false);
 
-            // Actualizar el producto seleccionado con los nuevos datos
-            const updatedProduct = {
-                ...selectedProduct,
-                nombre: values.nombre,
-                precio: values.precio,
-                peso: values.peso,
-                altura: values.altura,
-                ancho: values.ancho,
-                stock: values.stock,
-                descripcion: values.descripcion,
-                featured: values.featured,
-                categoria: values.categoria,
-                imagenes: existingImages.filter(img => !imagesToDelete.includes(img))
-            };
-            setSelectedProduct(updatedProduct);
-
+            // Limpiar estados y cerrar modal
             setOpenEdit(false);
+            setSelectedProduct(null);
             setImagenes([]);
             setPreviewUrls([]);
             setImagesToDelete([]);
-            await getProducts();
             
             Swal.fire({
                 text: 'Producto actualizado correctamente.',
@@ -486,7 +477,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                   />
                 )}
                 <p className="mt-1 text-sm text-gray-500">
-                  Puedes subir hasta 4 imágenes. Las imágenes deben ser en formato JPG, PNG o GIF.
+                  Podemos subir hasta 4 imágenes. Las imágenes deben ser en formato JPG, PNG o GIF.
                 </p>
 
                 {/* Nuevas imágenes */}
@@ -601,7 +592,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                 type="submit"
                 className="w-full text-white bg-green-500 rounded-lg p-3 font-bold mt-2 hover:bg-green-600 transition"
               >
-                Actualizar
+                {loadingEdit ? "Actualizando..." : 'Actualizar'}
               </button>
             </form>
           </div>
