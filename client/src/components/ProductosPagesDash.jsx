@@ -11,6 +11,7 @@ import Swal from 'sweetalert2/dist/sweetalert2.js'
 import 'sweetalert2/src/sweetalert2.scss'
 import { TbFilterCode, TbFilterDollar } from "react-icons/tb";
 import imgTest from "../assets/img/OIP.jpg"
+import Style from "../components/styles.module.css"
 
 import { FormCreatePage } from "../pages/FormCreatePage";
 
@@ -26,7 +27,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
   const [existingImages, setExistingImages] = useState([]);
   const [imagesToDelete, setImagesToDelete] = useState([]);
 
-  const [loading, setLoading] = useState(<div className='w-full h-full flex items-center justify-center'><div className='w-10 h-10 border-t-transparent border-b-transparent border-r-transparent border-l-transparent border-t-2 border-b-2 border-r-2 border-l-2 border-green-500 rounded-full animate-spin'></div></div>);
+  const [loading, setLoading] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
   const [category, setCategory] = useState('');
   const [sortType, setSortType] = useState('');
@@ -221,7 +222,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
 
             setLoadingEdit(true);
             const res = await actualizarProduct(selectedProduct.id, productData);
-            console.log(res);
+            // console.log(res);
             await getProducts();
             setLoadingEdit(false);
 
@@ -456,7 +457,7 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                       />
                       <button
                         type="button"
-                        onClick={() => removeExistingImage(index)}
+                        onClick={() => removeImage(index)}
                         className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                       >
                         ×
@@ -476,11 +477,14 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                     className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                 )}
-                <p className="mt-1 text-sm text-gray-500">
-                  Podemos subir hasta 4 imágenes. Las imágenes deben ser en formato JPG, PNG o GIF.
+                
+                {previewUrls.length > 0 && (<p className="mt-1 text-sm text-gray-500">
+                  Podes subir hasta 4 imágenes. Las imágenes deben ser en formato JPG, PNG o GIF.
                 </p>
+                )}
 
-                {/* Nuevas imágenes */}
+                {/* Imágenes nuevas */}
+                {previewUrls.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 rounded-lg border border-gray-300 p-2 mt-2">
                   {previewUrls.map((url, index) => (
                     <div key={`new-${index}`} className="relative">
@@ -499,7 +503,8 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
                     </div>
                   ))}
                 </div>
-              </div>
+                )}
+              </div>  
 
               {/* Altura + Ancho */}
               <div className="flex gap-3 w-full">
@@ -591,11 +596,17 @@ const ProductosPagesDash = ({ setIsModalOpen }) => {
               <button
                 type="submit"
                 className="w-full text-white bg-green-500 rounded-lg p-3 font-bold mt-2 hover:bg-green-600 transition"
-              >
-                {loadingEdit ? "Actualizando..." : 'Actualizar'}
+                disabled={loadingEdit}
+              > 
+                {loadingEdit ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <span className={Style.loader}></span>
+                    <span className="ml-2">Actualizando...</span>
+                  </div>
+                ) : "Actualizar"}
               </button>
-            </form>
-          </div>
+              </form>
+            </div>
         </div>
       )}
     </div>
